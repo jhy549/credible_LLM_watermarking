@@ -126,7 +126,7 @@ class WmProcessorMessageModel(WmProcessorBase):
             message_len = input_ids.shape[1] - self.lm_prefix_len
             cur_message = self.message[message_len // self.encode_len]
             cur_message = cur_message.reshape(-1)
-            print(cur_message)
+            # print(cur_message)
             if message_len % self.encode_len == 0:
                 if self.strategy in ['max_confidence', 'max_confidence_updated']:
                     self.seq_state_dict.clear()

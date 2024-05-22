@@ -54,4 +54,4 @@ print(output_text)
 prefix_and_output_text = tokenizer.decode(output_tokens[0], skip_special_tokens=True)
 log_probs = wm_precessor_message_model.decode(output_text)
 print(log_probs)
-print(log_probs[0])xxxx
+print(log_probs[0])

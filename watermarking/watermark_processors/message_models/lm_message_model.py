@@ -116,6 +116,7 @@ class LMPredictions:
         shuffle_idxs = random_shuffle(key=seeds,
                                       n=self.top_k if self.top_k > 0 else self.vocab_size,
                                       device=self.public_lm_probs.device)
+        # print(shuffle_idxs.shape)
 
         if shuffle_idxs.dim() == 1:
             shuffle_idxs = shuffle_idxs.unsqueeze(0)
