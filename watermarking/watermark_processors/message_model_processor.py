@@ -12,6 +12,9 @@ from .base_processor import WmProcessorBase
 from ..utils.random_utils import np_temp_random
 from ..utils.hash_fn import Hash1
 from .message_models.lm_message_model import LMMessageModel, TextTooShortError
+import logging
+logging.basicConfig(filename='example.log', level=logging.DEBUG, format='%(asctime)s:%(levelname)s:%(message)s')
+torch.set_printoptions(threshold=10000)
 
 HfTokenizer = Union[PreTrainedTokenizerFast, PreTrainedTokenizer]
 
@@ -89,6 +92,13 @@ class SeqStateDict:
         new_key = new_seq_state.key()
         self.seq_states_dict[new_key] = new_seq_state
 
+    def __repr__(self):
+        return (f"SeqStateDict(\n"
+                f"  message_model={self.message_model},\n"
+                f"  messages={self.messages},\n"
+                f"  seq_states_dict={self.seq_states_dict}\n"
+                f")")
+
 
 class WmProcessorMessageModel(WmProcessorBase):
     def __init__(self, message, message_model: LMMessageModel, tokenizer, encode_ratio=10.,
@@ -117,6 +127,7 @@ class WmProcessorMessageModel(WmProcessorBase):
         pass
 
     def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor) -> torch.FloatTensor:
+        original_scores = scores.clone()
         if self.message.device != input_ids.device:
             self.message = self.message.to(input_ids.device)
         try:
@@ -127,10 +138,11 @@ class WmProcessorMessageModel(WmProcessorBase):
             cur_message = self.message[message_len // self.encode_len]
             cur_message = cur_message.reshape(-1)
             # print(cur_message)
+            # print(self.strategy)
             if message_len % self.encode_len == 0:
                 if self.strategy in ['max_confidence', 'max_confidence_updated']:
                     self.seq_state_dict.clear()
-
+            # logging.info(scores)
             topk_scores, topk_indices = torch.topk(scores, self.top_k, dim=1)
 
             input_texts = self.tokenizer.batch_decode(input_ids, skip_special_tokens=True)
@@ -143,9 +155,13 @@ class WmProcessorMessageModel(WmProcessorBase):
             log_Ps = self.message_model.cal_log_Ps(input_ids, x_cur=topk_indices,
                                                    messages=cur_message,
                                                    lm_predictions=public_lm_probs)
+            # print(log_Ps.shape)
+            #这一段是否有效
             if self.strategy in ['max_confidence', 'max_confidence_updated']:
                 for i in range(input_ids.shape[0]):
+                    # print(input_ids[i], public_lm_probs[i:i + 1])
                     self.seq_state_dict.update(input_ids[i], public_lm_probs[i:i + 1])
+                    # print(self.seq_state_dict)
                 for i in range(input_ids.shape[0]):
                     seq_state = self.seq_state_dict.find(input_ids[i])
                     if seq_state is not None:
@@ -174,13 +190,25 @@ class WmProcessorMessageModel(WmProcessorBase):
                                   max=self.message_model.delta)
 
             log_Ps = log_Ps[:, 0, :]
-
+            # print(log_Ps)
             # empty_scores = torch.full_like(scores, -1e9)
             # empty_scores.scatter_(1, topk_indices, log_Ps + topk_scores)
             # empty_scores = F.log_softmax(empty_scores, dim=-1)
             # scores = empty_scores
+            # unique_elements = set(log_Ps)
+            # print(unique_elements)  
+
+
 
             scores.scatter_(1, topk_indices, log_Ps, reduce='add')
+            # print(topk_indices[0][0])
+            # print( log_Ps[0][topk_indices[0][0]])
+            # print(original_scores[0][topk_indices[0][0]])
+            # print(scores[0][topk_indices[0][0]])
+            # logging.info("topk_indices:\n %s", topk_indices[0])
+            # logging.info("log_Ps:\n %s", log_Ps[0])
+            # logging.info("Original Scores:\n %s", original_scores[0])
+            # logging.info("Updated Scores:\n %s", scores[0])
 
             max_cur = torch.argmax(scores, dim=1)
             self.message_model.seed_cacher.add_cur(max_cur.tolist())
@@ -189,6 +217,7 @@ class WmProcessorMessageModel(WmProcessorBase):
             pass
         if self.strategy in ['max_confidence', 'max_confidence_updated']:
             self.seq_state_dict.refresh()
+        # print(scores)
         return scores
 
     @property
@@ -200,6 +229,7 @@ class WmProcessorMessageModel(WmProcessorBase):
 
     def decode_with_input_ids(self, input_ids, messages=None, batch_size=16, disable_tqdm=False,
                               non_analyze=False):
+        print("开始解码")
         if messages is None:
             messages = self.decode_messages
         else:
@@ -255,10 +285,16 @@ class WmProcessorMessageModel(WmProcessorBase):
             # decoded_messages.append(decoded_message)
             # decoded_confidences.append((decoded_confidence,relative_decoded_confidence))
             if not non_analyze:
+                # print(all_log_Ps[i:i + self.encode_len])
                 nums = (all_log_Ps[i:i + self.encode_len] > 0).sum(0)
+                # print(nums)
+                # logging.info(nums)
+
                 max_values, max_indices = torch.max(nums, 0)
                 top_values, top_indices = torch.topk(nums, 2)
+                # print(max_indices,top_indices)
                 decoded_message = messages[max_indices]
+                # print(decoded_message)
                 decoded_confidence = int(max_values)
                 decoded_probs = float(torch.softmax(nums.float(), dim=-1)[max_indices])
                 relative_decoded_confidence = int(max_values) - int(top_values[1])

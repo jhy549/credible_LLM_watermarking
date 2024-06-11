@@ -47,12 +47,14 @@ def main(args: WmAnalysisArgs):
 
     if not check_ppl_in(results):
         if args.oracle_model_name == 'facebook/opt-2.7b':
-            oracle_tokenizer = load_local_model_or_tokenizer(args.oracle_model_name.split('/')[-1],
-                                                             'tokenizer')
+            # oracle_tokenizer = load_local_model_or_tokenizer(args.oracle_model_name.split('/')[-1],
+            #                                                  'tokenizer')
+            oracle_tokenizer = AutoTokenizer.from_pretrained("facebook/opt-2.7b")
             if oracle_tokenizer is None:
                 oracle_tokenizer = AutoTokenizer.from_pretrained(args.oracle_model_name)
-            oracle_model = load_local_model_or_tokenizer(args.oracle_model_name.split('/')[-1],
-                                                         'model')
+            # oracle_model = load_local_model_or_tokenizer(args.oracle_model_name.split('/')[-1],
+            #                                              'model')
+            oracle_model = AutoModelForCausalLM.from_pretrained(args.oracle_model_name)
             if oracle_model is None:
                 oracle_model = AutoModelForCausalLM.from_pretrained(args.oracle_model_name)
         else:

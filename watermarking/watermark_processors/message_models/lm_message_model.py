@@ -6,7 +6,7 @@ from transformers import PreTrainedTokenizerFast, PreTrainedTokenizer
 import torch
 
 from .base_message_model_fast import BaseMessageModelFast, TextTooShortError
-from ...utils.hash_fn import Hash1, random_shuffle
+from ...utils.hash_fn import Hash1, random_shuffle,custom_shuffle
 from ...utils.random_utils import np_temp_random
 
 HfTokenizer = Union[PreTrainedTokenizerFast, PreTrainedTokenizer]
@@ -117,6 +117,9 @@ class LMPredictions:
                                       n=self.top_k if self.top_k > 0 else self.vocab_size,
                                       device=self.public_lm_probs.device)
         # print(shuffle_idxs.shape)
+        # shuffle_idxs = custom_shuffle(key=seeds,
+        #                               n=self.top_k if self.top_k > 0 else self.vocab_size,
+        #                               device=self.public_lm_probs.device)
 
         if shuffle_idxs.dim() == 1:
             shuffle_idxs = shuffle_idxs.unsqueeze(0)
@@ -144,18 +147,22 @@ class LMPredictions:
         shuffle_idxs = random_shuffle(key=seeds,
                                       n=self.top_k if self.top_k > 0 else self.vocab_size,
                                       device=self.public_lm_probs.device)
-
+        # print(shuffle_idxs.shape)
         if shuffle_idxs.dim() == 1:
             shuffle_idxs = shuffle_idxs.unsqueeze(0)
 
         single_lm_probs = self.topk_public_lm_probs[batch_idx:batch_idx + 1] if self.top_k > 0 \
             else self.public_lm_probs[batch_idx:batch_idx + 1]
+        # print(single_lm_probs[0][12345])
         single_lm_probs = single_lm_probs.expand(shuffle_idxs.shape[0], -1)
         shuffled_lm_probs = single_lm_probs.gather(-1, shuffle_idxs)
-
+        # print(x_cur_idx)
         eq_mask = torch.eq(shuffle_idxs, x_cur_idx)
-        left_mask = 1 - eq_mask.cumsum(-1) + eq_mask
+        left_mask = 1 - eq_mask.cumsum(-1) + eq_mask 
+        # print(eq_mask.cumsum(-1))
+        # print(left_mask)
         isinAs = (shuffled_lm_probs * left_mask).sum(-1) >= 0.5
+        # print(len(isinAs))
 
         # left_mask = 1 - eq_mask.cumsum(-1)
         # isinAs = (shuffled_lm_probs * left_mask).sum(-1) < 0.5
@@ -365,6 +372,7 @@ class LMMessageModel(BaseMessageModelFast):
         seeds = seeds * (2 ** self.message_code_len) + messages.unsqueeze(0)
         # print("这是最后seed",seeds)  
         seeds = self.hash_fn(seeds)
+        # print(seeds.shape)
         return seeds
 
     def get_x_prefix_and_message_and_x_cur_seeds(self, x_prefix: torch.Tensor,
@@ -445,16 +453,16 @@ class LMMessageModel(BaseMessageModelFast):
         '''
         :param x_prefix: [batch, seq_len]
         :param x_cur: [batch, vocab_size]
-        :param messages: [message_num]
+        :param messages: [message_num] tensor([   0,    1,    2,  ..., 1021, 1022, 1023], device='cuda:0')
         :param lm_predictions: [batch, all_vocab_size]
 
         :return: log of P of size [batch, messages, vocab_size]
         '''
         assert x_cur.shape[1] == 1
-
+        # print("该阶段message",messages)
         x_prefix_seeds = self.get_x_prefix_seeds(x_prefix, transform=False)
 
-        lm_predictions = LMPredictions(lm_predictions, delta=self.delta, top_k=self.lm_top_k,
+        lm_predictions = LMPredictions(lm_predictions, delta=self.delta, top_k=self.lm_top_k,  #self.lm_top_k=-1
                                        cache_A=False)
         x_prefix_and_A_seeds = self.get_x_prefix_A_seeds(x_prefix_seeds=x_prefix_seeds)
         x_prefix_and_message_seeds = self.get_x_prefix_and_message_seeds(messages,
@@ -475,9 +483,15 @@ class LMMessageModel(BaseMessageModelFast):
                 in_A_s = lm_predictions.is_in_As_for_message(batch_idx=batch_idx,
                                                              seeds=x_prefix_and_A_seeds[batch_idx],
                                                              x_cur_idx=x_cur_idx)
+                # print(in_A_s)
+                # print((x_prefix_and_A_seeds[batch_idx]>0).sum())
                 is_in_certain_A = torch.gather(in_A_s, 0, x_prefix_and_message_idxs[batch_idx])
-                single_log_Ps = is_in_certain_A.float() * self.delta
-                single_log_Ps = single_log_Ps.reshape(1, -1, 1)
+                # print(is_in_certain_A.sum())
+                single_log_Ps = is_in_certain_A.float() * self.delta  #torch.Size([1024])
+                # print(single_log_Ps.shape)
+                single_log_Ps = single_log_Ps.reshape(1, -1, 1)   #torch.Size([1, 1024, 1])
+                # print(single_log_Ps.shape)
+
                 # print('in top_k')
             else:
                 raise NotImplementedError
@@ -513,9 +527,12 @@ class LMMessageModel(BaseMessageModelFast):
             log_Ps = self.cal_log_P_with_single_message(x_prefix, x_cur,
                                                         messages,
                                                         lm_predictions)
+            # print("函数1,%s" % x_cur.shape[1])
 
-        elif x_cur.shape[1] == 1:
+        elif x_cur.shape[1] == 1:  ###in max_confidence phase
+            # print(messages)
             log_Ps = self.cal_log_P_with_single_x_cur(x_prefix, x_cur, messages, lm_predictions)
+            # print('函数2,%s'% x_cur.shape[1])
         else:
             raise NotImplementedError
 
