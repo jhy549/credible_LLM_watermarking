@@ -1265,3 +1265,232 @@ He said his victory was based on the votes cast at the primaries.
 "It is true that I won the primary election but I want to assure you that my victory was based on the number of votes cast," he said.
 ‘‘In the primary election, I got 4 000 votes while my opponent got 2 000 votes.
 ‘�
+2024-06-11 18:14:38,540:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-11 18:14:39,180:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-11 18:14:39,623:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-11 18:14:40,411:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-11 18:14:41,078:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/model.safetensors HTTP/1.1" 404 0
+2024-06-11 18:14:50,057:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-11 18:14:51,461:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-11 18:14:51,814:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-11 18:14:52,349:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-11 18:14:52,411:DEBUG:open file: /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/dataset_dict.json
+2024-06-11 18:14:52,416:WARNING:Loading cached shuffled indices for dataset at /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/train/cache-0074cc17b6dc04f9.arrow
+2024-06-11 18:15:02,346:INFO: express their views during the primary elections.
+"I don't think they (Zimbabwe Electoral Commission) listened to us when we asked them to allow us to participate in the primary elections," he said.
+Dinha added: "The whole process was marred by irregularities."
+Chiyangwa, however, rubbished these allegations saying the claims were baseless.
+He said his victory was based on the votes cast at the primaries.
+"It is true that I won the primary election but I want to assure you that my victory was based on the number of votes cast," he said.
+‘‘In the primary election, I got 4 000 votes while my opponent got 2 000 votes.
+‘�
+2024-06-11 18:15:52,957:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-11 18:15:53,805:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-11 18:15:54,203:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-11 18:15:54,383:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-11 18:15:55,048:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/model.safetensors HTTP/1.1" 404 0
+2024-06-11 18:15:56,434:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-11 18:15:57,703:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-11 18:15:58,090:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-11 18:15:58,506:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-11 18:15:58,568:DEBUG:open file: /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/dataset_dict.json
+2024-06-11 18:15:58,573:WARNING:Loading cached shuffled indices for dataset at /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/train/cache-0074cc17b6dc04f9.arrow
+2024-06-11 18:16:03,680:INFO: express their views during the primary elections.
+"I don't think they (Zimbabwe Electoral Commission) listened to us when we asked them to allow us to participate in the primary elections," he said.
+Dinha added: "The whole process was marred by irregularities."
+Chiyangwa, however, rubbished these allegations saying the claims were baseless.
+He said his victory was based on the votes cast at the primaries.
+"It is true that I won the primary elections, but I want to assure you that the results are correct and there is nothing to worry about," he said.
+Chiyangwa also denied allegations that he used money to influence the outcome of the primary elections.
+‘�
+2024-06-12 09:56:31,732:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 09:56:32,743:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 09:56:34,283:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 09:56:40,755:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 09:56:41,353:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/model.safetensors HTTP/1.1" 404 0
+2024-06-12 09:56:54,892:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 09:56:58,250:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 09:56:59,711:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 09:57:04,724:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 09:57:04,837:DEBUG:open file: /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/dataset_dict.json
+2024-06-12 09:57:05,316:WARNING:Loading cached shuffled indices for dataset at /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/train/cache-0074cc17b6dc04f9.arrow
+2024-06-12 09:57:14,723:INFO: express their views during the primary elections.
+"I don't think they (Zimbabwe Electoral Commission) listened to us when we asked them to allow us to participate in the primary elections," he said.
+Dinha added: "They just wanted to see how many votes we could get. We didn't even have a chance to say what we want or what we don't want.
+‘‘The whole process was done by the ZEC without any consultation.''
+Chiy
+2024-06-12 10:00:23,768:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:00:24,550:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:00:24,950:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:00:25,119:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:00:25,692:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/model.safetensors HTTP/1.1" 404 0
+2024-06-12 10:00:27,109:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:00:28,369:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:00:28,722:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:00:29,149:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:00:29,220:DEBUG:open file: /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/dataset_dict.json
+2024-06-12 10:00:29,225:WARNING:Loading cached shuffled indices for dataset at /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/train/cache-0074cc17b6dc04f9.arrow
+2024-06-12 10:00:31,616:INFO: express their views during the primary elections.
+"I don't think they (Zimbabwe Electoral Commission) gave us a fair chance to participate in the primaries," he said.
+Dinha said
+2024-06-12 10:00:44,493:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:00:45,294:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:00:45,717:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:00:46,012:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:00:46,973:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/model.safetensors HTTP/1.1" 404 0
+2024-06-12 10:00:48,356:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:00:49,617:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:00:50,000:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:00:50,621:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:00:50,684:DEBUG:open file: /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/dataset_dict.json
+2024-06-12 10:00:50,689:WARNING:Loading cached shuffled indices for dataset at /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/train/cache-0074cc17b6dc04f9.arrow
+2024-06-12 10:00:53,027:INFO: express their views during the primary elections.
+"I don't think they (Zimbabwe Electoral Commission) gave us a fair chance to participate in the primaries," he said.
+Dinha said
+2024-06-12 10:01:02,854:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:01:03,418:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:01:04,022:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:01:04,192:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:01:05,158:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/model.safetensors HTTP/1.1" 404 0
+2024-06-12 10:01:06,530:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:01:07,781:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:01:08,166:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:01:08,582:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:01:08,644:DEBUG:open file: /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/dataset_dict.json
+2024-06-12 10:01:08,649:WARNING:Loading cached shuffled indices for dataset at /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/train/cache-0074cc17b6dc04f9.arrow
+2024-06-12 10:01:10,946:INFO: express their views during the primary elections.
+"I don't think they (Zimbabwe Electoral Commission) did anything wrong by holding the primaries. We just want to know what happened so that we can
+2024-06-12 10:01:25,957:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:01:26,901:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:01:27,295:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:01:27,468:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:01:28,064:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/model.safetensors HTTP/1.1" 404 0
+2024-06-12 10:01:29,443:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:01:30,793:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:01:31,519:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:01:31,986:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:01:32,049:DEBUG:open file: /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/dataset_dict.json
+2024-06-12 10:01:32,054:WARNING:Loading cached shuffled indices for dataset at /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/train/cache-0074cc17b6dc04f9.arrow
+2024-06-12 10:01:34,325:INFO: express their views during the primary elections.
+"I don't think they (Zimbabwe Electoral Commission) did anything wrong by holding the primaries. We just want to know what happened so that we can
+2024-06-12 10:06:11,057:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:06:11,706:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:06:12,111:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:06:12,284:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:06:12,859:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/model.safetensors HTTP/1.1" 404 0
+2024-06-12 10:06:14,235:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:06:15,513:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:06:15,866:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:06:16,299:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:06:16,360:DEBUG:open file: /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/dataset_dict.json
+2024-06-12 10:06:16,366:WARNING:Loading cached shuffled indices for dataset at /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/train/cache-0074cc17b6dc04f9.arrow
+2024-06-12 10:06:22,208:INFO: express their views during the primary elections.
+"I am very disappointed with the conduct of the Zimra (Zimbabwe Revenue Authority) staff who conducted the primaries. They did not allow us to
+2024-06-12 10:06:38,947:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:06:39,598:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:06:40,001:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:06:40,169:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:06:40,928:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/model.safetensors HTTP/1.1" 404 0
+2024-06-12 10:06:42,291:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:06:43,546:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:06:43,912:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:06:44,346:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:06:44,407:DEBUG:open file: /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/dataset_dict.json
+2024-06-12 10:06:44,412:WARNING:Loading cached shuffled indices for dataset at /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/train/cache-0074cc17b6dc04f9.arrow
+2024-06-12 10:07:05,463:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:07:06,347:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:07:06,749:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:07:06,920:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:07:07,555:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/model.safetensors HTTP/1.1" 404 0
+2024-06-12 10:07:08,927:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:07:10,208:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:07:10,561:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:07:11,000:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:07:11,070:DEBUG:open file: /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/dataset_dict.json
+2024-06-12 10:07:11,077:WARNING:Loading cached shuffled indices for dataset at /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/train/cache-0074cc17b6dc04f9.arrow
+2024-06-12 10:07:16,883:INFO: express their views during the primary elections.
+"I am very disappointed with the conduct of the Zimra (Zimbabwe Revenue Authority) staff who conducted the primaries. They did not allow us to
+2024-06-12 10:08:02,036:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:08:03,063:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:08:03,466:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:08:03,638:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:08:04,213:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/model.safetensors HTTP/1.1" 404 0
+2024-06-12 10:08:05,585:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:08:06,862:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:08:07,218:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:08:07,666:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:08:07,729:DEBUG:open file: /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/dataset_dict.json
+2024-06-12 10:08:07,734:WARNING:Loading cached shuffled indices for dataset at /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/train/cache-0074cc17b6dc04f9.arrow
+2024-06-12 10:08:13,527:INFO: express their views during the primary elections.
+"I am very disappointed with the conduct of the Zimra (Zimbabwe Revenue Authority) officials who conducted the primaries. They did not allow us to
+2024-06-12 10:09:12,855:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:09:13,604:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:09:13,998:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:09:14,171:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:09:14,809:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/model.safetensors HTTP/1.1" 404 0
+2024-06-12 10:09:16,187:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:09:17,473:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:09:17,881:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:09:18,302:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:09:18,364:DEBUG:open file: /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/dataset_dict.json
+2024-06-12 10:09:18,369:WARNING:Loading cached shuffled indices for dataset at /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/train/cache-0074cc17b6dc04f9.arrow
+2024-06-12 10:09:26,862:INFO: express their views during the primary elections.
+"I am very disappointed with what happened. I think we should go back to the drawing board and look at the way forward," he said.
+Dinha added: "There is a lot of money involved here. We
+2024-06-12 10:09:44,400:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:09:45,184:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:09:45,626:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:09:45,797:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:09:46,367:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/model.safetensors HTTP/1.1" 404 0
+2024-06-12 10:09:47,760:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:09:49,018:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:09:49,376:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:09:49,802:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:09:49,863:DEBUG:open file: /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/dataset_dict.json
+2024-06-12 10:09:49,868:WARNING:Loading cached shuffled indices for dataset at /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/train/cache-0074cc17b6dc04f9.arrow
+2024-06-12 10:09:58,283:INFO: express their views during the primary elections.
+"I am very disappointed with what happened. I thought they (Zifa) had done a good job by conducting the primaries in a transparent manner.
+"The fact that we did not have an opportunity to voice our opinions shows
+2024-06-12 10:10:44,995:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:10:45,953:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:10:46,442:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:10:46,613:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:10:47,277:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/model.safetensors HTTP/1.1" 404 0
+2024-06-12 10:10:48,680:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:10:49,970:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:10:50,350:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:10:50,786:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:10:50,852:DEBUG:open file: /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/dataset_dict.json
+2024-06-12 10:10:50,856:WARNING:Loading cached shuffled indices for dataset at /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/train/cache-0074cc17b6dc04f9.arrow
+2024-06-12 10:10:59,360:INFO: express their views on Chiyangwa.
+"We don't even know what we stand for," he said.
+"We do not even know if he is a good or bad person. He does not seem to care about his constituency. We want to elect someone
+2024-06-12 10:12:03,288:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:12:04,079:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:12:04,469:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:12:04,659:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:12:05,297:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/model.safetensors HTTP/1.1" 404 0
+2024-06-12 10:12:06,674:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:12:07,930:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:12:08,303:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:12:08,745:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:12:08,812:DEBUG:open file: /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/dataset_dict.json
+2024-06-12 10:12:08,817:WARNING:Loading cached shuffled indices for dataset at /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/train/cache-0074cc17b6dc04f9.arrow
+2024-06-12 10:12:17,283:INFO: express their views on Chiyangwa.
+"We don't even know what we stand for," he said.
+"We do not even know if he is a good or bad person. He does not seem to care about his constituency. We want to elect someone
+2024-06-12 10:12:59,827:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:13:00,443:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:13:00,860:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:13:01,037:DEBUG:Starting new HTTPS connection (1): huggingface.co:443
+2024-06-12 10:13:01,598:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/model.safetensors HTTP/1.1" 404 0
+2024-06-12 10:13:02,974:DEBUG:https://huggingface.co:443 "HEAD /facebook/opt-1.3b/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:13:04,910:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2024-06-12 10:13:05,285:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/config.json HTTP/1.1" 200 0
+2024-06-12 10:13:05,724:DEBUG:https://huggingface.co:443 "HEAD /gpt2/resolve/main/generation_config.json HTTP/1.1" 200 0
+2024-06-12 10:13:05,798:DEBUG:open file: /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/dataset_dict.json
+2024-06-12 10:13:05,804:WARNING:Loading cached shuffled indices for dataset at /ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512_sliced/train/cache-0074cc17b6dc04f9.arrow
+2024-06-12 10:13:08,937:INFO: express their views during the primary elections.
+‘‘We were never given any chance to participate in the process.
+‘‘All we received was a letter inviting us to the party headquarters," he said.
+Dinha said the party failed to

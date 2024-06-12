@@ -45,13 +45,13 @@ from watermarking.watermark_processors.message_models.lm_message_model import LM
 from watermarking.watermark_processors.message_model_processor import WmProcessorMessageModel
 
 lm_message_model = LMMessageModel(tokenizer=tokenizer,lm_model=lm_model,lm_tokenizer=lm_tokenizer,
-    delta = 1.5, lm_prefix_len=10, lm_topk=-1, message_code_len = 10,random_permutation_num=50)
+    delta = 5.5, lm_prefix_len=10, lm_topk=-1, message_code_len = 10,random_permutation_num=50)
 wm_precessor_message_model = WmProcessorMessageModel(message_model=lm_message_model,tokenizer=tokenizer,
-    encode_ratio=5,max_confidence_lbd=0.5,strategy='max_confidence_updated', message=[32,1,1002])
+    encode_ratio=1.5,max_confidence_lbd=0.5,strategy='max_confidence_updated', message=[322,1,1002])
 
 start_length = tokenized_input['input_ids'].shape[-1]
 wm_precessor_message_model.start_length = start_length
-output_tokens = model.generate(**tokenized_input, max_new_tokens=150, num_beams=4,
+output_tokens = model.generate(**tokenized_input, max_new_tokens=55, num_beams=4,
                                logits_processor=LogitsProcessorList(
                                    [min_length_processor, repetition_processor,
                                     wm_precessor_message_model]))
