@@ -6,7 +6,7 @@ from transformers import PreTrainedTokenizerFast, PreTrainedTokenizer
 import torch
 
 from .base_message_model_fast import BaseMessageModelFast, TextTooShortError
-from ...utils.hash_fn import Hash1, random_shuffle,custom_shuffle
+from ...utils.hash_fn import Hash1, random_shuffle
 from ...utils.random_utils import np_temp_random
 
 HfTokenizer = Union[PreTrainedTokenizerFast, PreTrainedTokenizer]
@@ -125,7 +125,7 @@ class LMPredictions:
             shuffle_idxs = shuffle_idxs.unsqueeze(0)
         shuffled_lm_probs = single_lm_probs.gather(-1, shuffle_idxs)
 
-        shuffled_lm_probs_black_mask = (shuffled_lm_probs.cumsum(-1) < 0.5).float() * (-self.delta)
+        shuffled_lm_probs_black_mask = (shuffled_lm_probs.cumsum(-1) < 0.5).to(shuffled_lm_probs.dtype) * (-self.delta)
         # TO DO here we change single_lm_probs in-place!
         p_message = single_lm_probs.scatter_(dim=-1, index=shuffle_idxs,
                                              src=shuffled_lm_probs_black_mask)
@@ -232,6 +232,8 @@ class LMMessageModel(BaseMessageModelFast):
                                                           dtype=torch.long)
         for v, i in self.tokenizer.vocab.items():
             tokenizer_id_2_lm_tokenizer_id_list[i] = self.lm_tokenizer.convert_tokens_to_ids(v)
+        # device = self.lm_model.module.device if isinstance(self.lm_model, torch.nn.DataParallel) else self.lm_model.device
+        # return tokenizer_id_2_lm_tokenizer_id_list.to(device)
         return tokenizer_id_2_lm_tokenizer_id_list.to(self.lm_model.device)
 
     def check_x_prefix_x_cur_messages(self, x_prefix: Optional[torch.Tensor] = None,
@@ -273,6 +275,7 @@ class LMMessageModel(BaseMessageModelFast):
         encodings['input_ids'] = encodings['input_ids'][:, -self.lm_prefix_len:]
         encodings['attention_mask'] = encodings['attention_mask'][:, -self.lm_prefix_len:]
         encodings = encodings.to(self.lm_model.device)
+        # encodings = {key: value.to('cuda') for key, value in encodings.items()}
         with torch.no_grad():
             logits = self.lm_model(**encodings).logits
         final_pos = (encodings['input_ids'] != self.lm_tokenizer.pad_token_id).sum(dim=1) - 1

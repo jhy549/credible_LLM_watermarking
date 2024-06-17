@@ -12,7 +12,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 
 tokenizer = AutoTokenizer.from_pretrained("facebook/opt-1.3b")
 model = AutoModelForCausalLM.from_pretrained("facebook/opt-1.3b")
-model = model.to('cuda:3')
+model = model.to('cuda:0')
 
 c4_sliced_and_filted = load_from_disk('./c4-train.00000-of-00512_sliced')
 c4_sliced_and_filted = c4_sliced_and_filted['train'].shuffle(seed=42).select(
@@ -37,13 +37,13 @@ from watermarking.watermark_processors.message_models.lm_message_model import LM
 from watermarking.watermark_processors.message_model_processor import WmProcessorMessageModel
 
 lm_message_model = LMMessageModel(tokenizer=tokenizer,lm_model=model,lm_tokenizer=tokenizer,
-    delta = 1.5, lm_prefix_len=10, lm_topk=-1, message_code_len = 10,random_permutation_num=50)
+    delta = 5.5, lm_prefix_len=10, lm_topk=-1, message_code_len = 10,random_permutation_num=50)
 wm_precessor_message_model = WmProcessorMessageModel(message_model=lm_message_model,tokenizer=tokenizer,
-    encode_ratio=5,max_confidence_lbd=0.5,strategy='max_confidence', message=[45,51,2,566,10,11])
+    encode_ratio=1.5,max_confidence_lbd=0.5,strategy='max_confidence', message=[45,51,2,566,10,11])
 
 start_length = tokenized_input['input_ids'].shape[-1]
 wm_precessor_message_model.start_length = start_length
-output_tokens = model.generate(**tokenized_input, max_new_tokens=300, num_beams=4,
+output_tokens = model.generate(**tokenized_input, max_new_tokens=100, num_beams=4,
                                logits_processor=LogitsProcessorList(
                                    [min_length_processor, repetition_processor,
                                     wm_precessor_message_model]))

@@ -149,7 +149,7 @@ class WmProcessorMessageModel(WmProcessorBase):
 
             public_lm_probs = self.message_model.get_lm_predictions(input_texts)
 
-            # print('public_lm_probs', public_lm_probs.shape)
+            # print('public_lm_probs', public_lm_probs.dtype)
             # print('input_ids', input_ids.shape)
 
             log_Ps = self.message_model.cal_log_Ps(input_ids, x_cur=topk_indices,
@@ -198,8 +198,9 @@ class WmProcessorMessageModel(WmProcessorBase):
             # unique_elements = set(log_Ps)
             # print(unique_elements)  
 
-
-
+            # log_Ps = log_Ps.to(scores.dtype)
+            scores = scores.to(log_Ps.dtype)
+            # print(scores.dtype,log_Ps.dtype)
             scores.scatter_(1, topk_indices, log_Ps, reduce='add')
             # print(topk_indices[0][0])
             # print( log_Ps[0][topk_indices[0][0]])
@@ -292,6 +293,9 @@ class WmProcessorMessageModel(WmProcessorBase):
 
                 max_values, max_indices = torch.max(nums, 0)
                 top_values, top_indices = torch.topk(nums, 2)
+                # top4_values, top4_indices = torch.topk(nums, 4)
+                # values = [messages[i] for i in top_indices]
+                # print(values,top_values)
                 # print(max_indices,top_indices)
                 decoded_message = messages[max_indices]
                 # print(decoded_message)
