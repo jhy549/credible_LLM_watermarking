@@ -275,6 +275,7 @@ class WmProcessorMessageModel(WmProcessorBase):
 
         all_log_Ps = torch.cat(all_log_Ps, dim=0)
         all_log_Ps = all_log_Ps.squeeze()
+        # print(all_log_Ps)
         decoded_messages = []
         decoded_confidences = []
         for i in range(0, all_log_Ps.shape[0], self.encode_len):

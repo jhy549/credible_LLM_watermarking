@@ -13,15 +13,15 @@ logging.basicConfig(filename='example.log', level=logging.DEBUG, format='%(ascti
 # torch.set_printoptions(threshold=10000)
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-tokenizer = AutoTokenizer.from_pretrained("facebook/opt-1.3b")
-model = AutoModelForCausalLM.from_pretrained("facebook/opt-1.3b")#,torch_dtype=torch.float16)
-model = model.to('cuda:1')
+tokenizer = AutoTokenizer.from_pretrained("huggyllama/llama-13b")
+model = AutoModelForCausalLM.from_pretrained("huggyllama/llama-13b",device_map="auto")#,torch_dtype=torch.float16)
+# model = model.to('cuda:1')
 
 # model = model.to(devices)
 # model = torch.nn.DataParallel(model)
-lm_tokenizer = AutoTokenizer.from_pretrained("google/gemma-2b",trust_remote_code=True)
-lm_model = AutoModelForCausalLM.from_pretrained("google/gemma-2b",trust_remote_code=True)
-lm_model = lm_model.to('cuda:1')
+# lm_tokenizer = AutoTokenizer.from_pretrained("google/gemma-2b",trust_remote_code=True)
+# lm_model = AutoModelForCausalLM.from_pretrained("google/gemma-2b",trust_remote_code=True)
+# lm_model = lm_model.to('cuda:1')
 
 
 c4_sliced_and_filted = load_from_disk('./c4-train.00000-of-00512_sliced')
@@ -31,6 +31,8 @@ c4_sliced_and_filted = c4_sliced_and_filted['train'].shuffle(seed=42).select(
 
 sample_idx = 98
 input_text = c4_sliced_and_filted[sample_idx]['text']
+# input_text = "For important files, data, information, etc. transmitted and stored in the computer system, it is generally necessary to have some way to confirm its authenticity, i.e., the receiver can confirm that the information he/she receives is indeed sent by the sender claimed in the information, not by the illegal intruder who forges or pretends to send it, and also can guarantee that the information has not been maliciously tampered with in the transmission and storage, so that the information can truly reflect the intention of the sender. The message can truly reflect the intention of the sender. In addition, for the sender, if a message is sent, there must be certain measures to prevent it from denying its own behavior of sending the message, i.e., non-repudiation"
+# print(input_text)
 tokenized_input = tokenizer(input_text, return_tensors='pt').to(model.device)
 tokenized_input = truncate(tokenized_input, max_length=300)
 
@@ -46,14 +48,14 @@ watermarking.watermark_processors.message_model_processor = reload(watermarking.
 from watermarking.watermark_processors.message_models.lm_message_model import LMMessageModel
 from watermarking.watermark_processors.message_model_processor import WmProcessorMessageModel
 
-lm_message_model = LMMessageModel(tokenizer=tokenizer,lm_model=lm_model,lm_tokenizer=lm_tokenizer,
-    delta = 1.5, lm_prefix_len=10, lm_topk=-1, message_code_len = 10,random_permutation_num=50)
+lm_message_model = LMMessageModel(tokenizer=tokenizer,lm_model=model,lm_tokenizer=tokenizer,
+    delta = 5.5, lm_prefix_len=10, lm_topk=-1, message_code_len = 10,random_permutation_num=50)
 wm_precessor_message_model = WmProcessorMessageModel(message_model=lm_message_model,tokenizer=tokenizer,
-    encode_ratio=5,max_confidence_lbd=0.5,strategy='max_confidence_updated', message=[681,1013,213])
+    encode_ratio=5,max_confidence_lbd=0.5,strategy='max_confidence_updated', message=[681])
 
 start_length = tokenized_input['input_ids'].shape[-1]
 wm_precessor_message_model.start_length = start_length
-output_tokens = model.generate(**tokenized_input, max_new_tokens=160, num_beams=4,
+output_tokens = model.generate(**tokenized_input, max_new_tokens=60, num_beams=4,
                                logits_processor=LogitsProcessorList(
                                    [min_length_processor, repetition_processor,
                                     wm_precessor_message_model]))
@@ -63,7 +65,7 @@ output_text = tokenizer.decode(output_tokens[0][start_length:],
 logging.info(output_text)
 prefix_and_output_text = tokenizer.decode(output_tokens[0], skip_special_tokens=True)
 log_probs = wm_precessor_message_model.decode(output_text)
-# print(log_probs) 
+print(log_probs) 
 print(log_probs[0])
 
 

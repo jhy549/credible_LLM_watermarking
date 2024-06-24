@@ -19,9 +19,9 @@ tokenizer = AutoTokenizer.from_pretrained("gpt2")
 model = AutoModelForCausalLM.from_pretrained("gpt2")#,torch_dtype=torch.float16)
 model = model.to('cuda:0')
 
-lm_tokenizer = AutoTokenizer.from_pretrained("google/gemma-2b")
-lm_model = AutoModelForCausalLM.from_pretrained("google/gemma-2b")#,torch_dtype=torch.float16)
-lm_model = lm_model.to('cuda:0')
+# lm_tokenizer = AutoTokenizer.from_pretrained("gpt2")
+# lm_model = AutoModelForCausalLM.from_pretrained("gpt2")#,torch_dtype=torch.float16)
+# lm_model = lm_model.to('cuda:0')
 
 # lm_model = lm_model.to(devices)
 # lm_model = lm_model.to('cuda')
@@ -61,7 +61,7 @@ encode_ratio = 8
 lm_prefix_len=10
 
 
-lm_message_model = LMMessageModel(tokenizer=tokenizer,lm_model=lm_model,lm_tokenizer=lm_tokenizer,
+lm_message_model = LMMessageModel(tokenizer=tokenizer,lm_model=model,lm_tokenizer=tokenizer,
     delta = 5.5, lm_prefix_len=lm_prefix_len, lm_topk=-1, message_code_len = 1,random_permutation_num=20)
 wm_precessor_message_model = WmProcessorMessageModel(message_model=lm_message_model,tokenizer=tokenizer,
     encode_ratio=encode_ratio,max_confidence_lbd=0.5,strategy='max_confidence_updated', message=encode_message)
@@ -83,17 +83,17 @@ print(log_probs[0])
 decode_message = ecc.decode(log_probs[0],padding_length)
 print(decode_message)
 
-oracle_tokenizer = AutoTokenizer.from_pretrained("huggyllama/llama-7b")
-oracle_model = AutoModelForCausalLM.from_pretrained("huggyllama/llama-7b",torch_dtype=torch.float16)
+oracle_tokenizer = AutoTokenizer.from_pretrained("huggyllama/llama-13b")
+oracle_model = AutoModelForCausalLM.from_pretrained("huggyllama/llama-13b",device_map="auto")#,torch_dtype=torch.float16)
 
 # oracle_tokenizer = load_local_model_or_tokenizer('facebook/opt-2.7b', 'tokenizer')
 # oracle_model = load_local_model_or_tokenizer('facebook/opt-2.7b', 'model')
-oracle_model = oracle_model.to('cuda:2')
+# oracle_model = oracle_model.to('cuda:2')
 
 from watermarking.experiments.watermark import compute_ppl_single
 
 loss, ppl = compute_ppl_single(prefix_and_output_text=prefix_and_output_text,
-                               oracle_model_name='huggyllama/llama-7b',
+                               oracle_model_name='huggyllama/llama-13b',
                                output_text=output_text,
                                oracle_model=oracle_model, oracle_tokenizer=oracle_tokenizer)
 print(loss, ppl)
@@ -107,7 +107,7 @@ no_wm_output_text = tokenizer.decode(no_wm_output_tokens[0][tokenized_input['inp
 no_wm_prefix_and_output_text = tokenizer.decode(no_wm_output_tokens[0], skip_special_tokens=True)
 logging.warning(no_wm_output_text)
 loss, ppl = compute_ppl_single(prefix_and_output_text=no_wm_prefix_and_output_text,
-                               oracle_model_name='huggyllama/llama-7b',
+                               oracle_model_name='huggyllama/llama-13b',
                                output_text=no_wm_output_text,
                                oracle_model=oracle_model, oracle_tokenizer=oracle_tokenizer)
 print(loss, ppl)

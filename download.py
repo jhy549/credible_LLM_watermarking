@@ -5,5 +5,5 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 
 
 
-lm_tokenizer = AutoTokenizer.from_pretrained("google/gemma-2b")
-lm_model = AutoModelForCausalLM.from_pretrained("google/gemma-2b")
+lm_tokenizer = AutoTokenizer.from_pretrained("huggyllama/llama-65b")
+lm_model = AutoModelForCausalLM.from_pretrained("huggyllama/llama-65b")
