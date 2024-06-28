@@ -29,7 +29,7 @@ def main(args: WmRandomArgs):
         print(f'{args.complete_save_file_path} already exists, skip.')
         return
 
-    if args.model_name in ['facebook/opt-1.3b', 'facebook/opt-2.7b', 'alpaca-native']:
+    if args.model_name in ['huggyllama/llama-7b','facebook/opt-1.3b', 'facebook/opt-2.7b', 'alpaca-native']:
         # tokenizer = load_local_model_or_tokenizer(args.model_name.split('/')[-1], 'tokenizer')
         tokenizer = AutoTokenizer.from_pretrained(args.model_name)
         if tokenizer is None:
@@ -37,16 +37,16 @@ def main(args: WmRandomArgs):
         # model = load_local_model_or_tokenizer(args.model_name.split('/')[-1], 'model')
         model = AutoModelForCausalLM.from_pretrained(args.model_name)
         if model is None:
-            model = AutoModelForCausalLM.from_pretrained(args.model_name)
+            model = AutoModelForCausalLM.from_pretrained(args.model_name,device_map="auto")
     else:
         raise NotImplementedError(f'model_name: {args.model_name}')
 
-    model = model.to(args.device)
+    # model = model.to(args.device)
 
-    if args.lm_model_name == 'same':
-        lm_tokenizer = tokenizer
-    else:
-        lm_tokenizer = load_local_model_or_tokenizer(args.lm_model_name.split('/')[-1], 'tokenizer')
+    # if args.lm_model_name == 'same':
+    #     lm_tokenizer = tokenizer
+    # else:
+    #     lm_tokenizer = load_local_model_or_tokenizer(args.lm_model_name.split('/')[-1], 'tokenizer')
 
     c4_sliced_and_filted = load_from_disk(
         os.path.join(ROOT_PATH, 'c4-train.00000-of-00512_sliced'))
@@ -54,7 +54,7 @@ def main(args: WmRandomArgs):
         range(args.sample_num))
 
     lm_message_model = RandomMessageModel(tokenizer=tokenizer,
-                                          lm_tokenizer=lm_tokenizer,
+                                          lm_tokenizer=tokenizer,
                                           delta=args.delta,
                                           message_code_len=args.message_code_len,
                                           device=model.device,
@@ -67,7 +67,7 @@ def main(args: WmRandomArgs):
                                                         top_k=args.top_k,
                                                         )
 
-    min_length_processor = MinLengthLogitsProcessor(min_length=10000,
+    min_length_processor = MinLengthLogitsProcessor(min_length=1000,
                                                     # just to make sure there's no EOS
                                                     eos_token_id=tokenizer.eos_token_id)
     rep_processor = RepetitionPenaltyLogitsProcessor(penalty=args.repeat_penalty)

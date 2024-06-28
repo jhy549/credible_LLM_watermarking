@@ -16,7 +16,7 @@ ROOT_PATH = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__fi
 @dataclass
 class WmBaseArgs:
     temperature: float = 1.0
-    model_name: str = "facebook/opt-1.3b"
+    model_name: str = "huggyllama/llama-7b"
     sample_num: int = 100
     sample_seed: int = 42
     seed: int = 42
@@ -90,7 +90,7 @@ class WmRandomArgs(WmBaseArgs):
     prefix_len: int = 1
     top_k: int = 1000
     wm_strategy: str = "random_7_8"
-    lm_model_name: str = 'gpt2'
+    lm_model_name: str = 'same'
 
     @property
     def special_file_name(self):

@@ -100,7 +100,7 @@ class SeqStateDict:
                 f")")
 
 
-class WmProcessorMessageModel(WmProcessorBase):
+class WmProcessorMessageModel_update(WmProcessorBase):
     def __init__(self, message, message_model: LMMessageModel, tokenizer, encode_ratio=10.,
                  seed=42, strategy='vanilla', max_confidence_lbd=0.2, top_k=1000):
         super().__init__(seed=seed)
