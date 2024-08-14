@@ -2,7 +2,7 @@
 
 ### Preparation
 
-Requirement: transformers==4.28, torch, numpy
+Requirement: transformers==4.28, torch==2.3.1, numpy
 
 
 
