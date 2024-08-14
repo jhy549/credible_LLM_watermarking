@@ -11,12 +11,13 @@ import torch.nn.functional as F
 from .base_processor import WmProcessorBase
 from ..utils.random_utils import np_temp_random
 from ..utils.hash_fn import Hash1
-from .message_models.lm_message_model import LMMessageModel, TextTooShortError
+from .message_models.lm_message_model_update_1 import LMMessageModel_update, TextTooShortError
 import logging
 logging.basicConfig(filename='example.log', level=logging.DEBUG, format='%(asctime)s:%(levelname)s:%(message)s')
 torch.set_printoptions(threshold=10000)
 
 HfTokenizer = Union[PreTrainedTokenizerFast, PreTrainedTokenizer]
+
 
 
 def convert_input_ids_to_key(input_ids):
@@ -38,7 +39,7 @@ class SeqState:
 
 @dataclass
 class SeqStateDict:
-    message_model: LMMessageModel
+    message_model: LMMessageModel_update
     messages: torch.LongTensor
     seq_states: Iterable[SeqState] = field(default_factory=list)
 
@@ -101,13 +102,13 @@ class SeqStateDict:
 
 
 class WmProcessorMessageModel_update(WmProcessorBase):
-    def __init__(self, message, message_model: LMMessageModel, tokenizer, encode_ratio=10.,
+    def __init__(self, message, message_model: LMMessageModel_update, tokenizer, encode_ratio=10.,
                  seed=42, strategy='vanilla', max_confidence_lbd=0.2, top_k=1000):
         super().__init__(seed=seed)
         self.message = message
         if not isinstance(self.message, torch.Tensor):
             self.message = torch.tensor(self.message)
-        self.message_model: LMMessageModel = message_model
+        self.message_model: LMMessageModel_update = message_model
         self.message_code_len = self.message_model.message_code_len
         self.encode_ratio = encode_ratio
         self.encode_len = int(self.message_code_len * self.encode_ratio)
@@ -143,53 +144,66 @@ class WmProcessorMessageModel_update(WmProcessorBase):
                 if self.strategy in ['max_confidence', 'max_confidence_updated']:
                     self.seq_state_dict.clear()
             # logging.info(scores)
-            topk_scores, topk_indices = torch.topk(scores, self.top_k, dim=1)
+            # print(scores.shape[1])
+            # print(self.top_k)
+            topk_scores, topk_indices = torch.topk(scores, scores.shape[1], dim=1)
+            
+            # logging.warning(topk_indices)
 
             input_texts = self.tokenizer.batch_decode(input_ids, skip_special_tokens=True)
 
             public_lm_probs = self.message_model.get_lm_predictions(input_texts)
 
             # print('public_lm_probs', public_lm_probs.dtype)
-            # print('input_ids', input_ids.shape)
+            # logging.warning(input_ids, input_ids.shape)
 
             log_Ps = self.message_model.cal_log_Ps(input_ids, x_cur=topk_indices,
                                                    messages=cur_message,
                                                    lm_predictions=public_lm_probs)
+            
             # print(log_Ps.shape)
-            #这一段是否有效
-            if self.strategy in ['max_confidence', 'max_confidence_updated']:
-                for i in range(input_ids.shape[0]):
-                    # print(input_ids[i], public_lm_probs[i:i + 1])
-                    self.seq_state_dict.update(input_ids[i], public_lm_probs[i:i + 1])
-                    # print(self.seq_state_dict)
-                for i in range(input_ids.shape[0]):
-                    seq_state = self.seq_state_dict.find(input_ids[i])
-                    if seq_state is not None:
-                        if seq_state.log_probs is None:
-                            continue
-                        message_log_probs = seq_state.log_probs.detach().clone()
-                        message_log_probs[cur_message] = -torch.inf
-                        second_max_message = torch.argmax(message_log_probs)
-                        seconde_max_log_probs = self.message_model.cal_log_Ps(input_ids[i:i + 1],
-                                                                              x_cur=topk_indices[
-                                                                                    i:i + 1],
-                                                                              messages=second_max_message.reshape(
-                                                                                  -1),
-                                                                              lm_predictions=public_lm_probs[
-                                                                                             i:i + 1]
-                                                                              )
-                        log_Ps[i:i + 1] = log_Ps[
-                                          i:i + 1] - seconde_max_log_probs * self.max_confidence_lbd
+            # 这一段是否有效
+            # if self.strategy in ['max_confidence', 'max_confidence_updated']:
+            #     for i in range(input_ids.shape[0]):
+            #         # print(input_ids[i], public_lm_probs[i:i + 1])
+            #         self.seq_state_dict.update(input_ids[i], public_lm_probs[i:i + 1])
+            #         # print(self.seq_state_dict)
+            #     for i in range(input_ids.shape[0]):
+            #         seq_state = self.seq_state_dict.find(input_ids[i])
+            #         if seq_state is not None:
+            #             if seq_state.log_probs is None:
+            #                 continue
+            #             message_log_probs = seq_state.log_probs.detach().clone()
+            #             message_log_probs[cur_message] = -torch.inf
+            #             second_max_message = torch.argmax(message_log_probs)
+            #             seconde_max_log_probs = self.message_model.cal_log_Ps(input_ids[i:i + 1],
+            #                                                                   x_cur=topk_indices[
+            #                                                                         i:i + 1],
+            #                                                                   messages=second_max_message.reshape(
+            #                                                                       -1),
+            #                                                                   lm_predictions=public_lm_probs[
+            #                                                                                  i:i + 1]
+            #                                                                   )
+            #             log_Ps[i:i + 1] = log_Ps[
+            #                               i:i + 1] - seconde_max_log_probs * self.max_confidence_lbd
 
-                        # print('asa')
-                if self.strategy == 'max_confidence_updated':
-                    log_Ps.clamp_(min=-0.5 * self.message_model.delta,
-                                  max=self.message_model.delta * 0.5)
-                elif self.strategy == 'max_confidence':
-                    log_Ps.clamp_(min=-self.message_model.delta,
-                                  max=self.message_model.delta)
+            #             # print('asa')
+            #     if self.strategy == 'max_confidence_updated':
+            #         log_Ps.clamp_(min=-0.5 * self.message_model.delta,
+            #                       max=self.message_model.delta * 0.5)
+            #     elif self.strategy == 'max_confidence':
+            #         log_Ps.clamp_(min=-self.message_model.delta,
+            #                       max=self.message_model.delta)
 
             log_Ps = log_Ps[:, 0, :]
+            # log_Ps_mean = log_Ps.mean(dim=1, keepdim=True)
+            # unbiased_log_Ps = log_Ps - log_Ps_mean
+            # print(log_Ps)
+            # scores = scores.to(unbiased_log_Ps.dtype)
+            # scores.scatter_(1, topk_indices, unbiased_log_Ps, reduce='add')
+
+
+
             # print("mean:",scores.mean(),log_Ps.mean())
             # print("std:",scores.std(),log_Ps.std())
             # print(log_Ps)

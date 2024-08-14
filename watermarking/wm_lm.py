@@ -1,6 +1,7 @@
 import json
 import os.path
 from dataclasses import dataclass
+import random
 
 import torch
 from tqdm import tqdm
@@ -13,6 +14,8 @@ from .utils.load_local import load_local_model_or_tokenizer
 from .arg_classes.wm_arg_class import WmLMArgs
 from .watermark_processors.message_model_processor import WmProcessorMessageModel
 from .watermark_processors.message_models.lm_message_model import LMMessageModel
+from watermarking.watermark_processors.message_models.lm_message_model_update_1 import LMMessageModel_update
+from watermarking.watermark_processors.message_model_processor_update import WmProcessorMessageModel_update
 
 ROOT_PATH = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
@@ -29,50 +32,64 @@ def main(args: WmLMArgs):
         print(f'{args.complete_save_file_path} already exists, skip.')
         return
 
-    if args.model_name in ['facebook/opt-1.3b', 'facebook/opt-2.7b', 'alpaca-native']:
+    if args.model_name in ['facebook/opt-1.3b', 'facebook/opt-2.7b', 'alpaca-native','huggyllama/llama-7b','tiiuae/falcon-7b','google/gemma-7b','meta-llama/Meta-Llama-3-8B']:
         # tokenizer = load_local_model_or_tokenizer(args.model_name.split('/')[-1], 'tokenizer')
         tokenizer = AutoTokenizer.from_pretrained(args.model_name)
 
         if tokenizer is None:
             tokenizer = AutoTokenizer.from_pretrained(args.model_name)
         # model = load_local_model_or_tokenizer(args.model_name.split('/')[-1], 'model')
-        model = AutoModelForCausalLM.from_pretrained(args.model_name)
+        model = AutoModelForCausalLM.from_pretrained(args.model_name,device_map="auto")
         if model is None:
-            model = AutoModelForCausalLM.from_pretrained(args.model_name)
+            model = AutoModelForCausalLM.from_pretrained(args.model_name,device_map="auto")
     else:
         raise NotImplementedError(f'model_name: {args.model_name}')
 
-    model = model.to(args.device)
+    # model = model.to(args.device)
 
-    if args.lm_model_name == 'same':
-        lm_model = model
-        lm_tokenizer = tokenizer
-    else:
-        # lm_model = load_local_model_or_tokenizer(args.lm_model_name.split('/')[-1], 'model')
-        # lm_tokenizer = load_local_model_or_tokenizer(args.lm_model_name.split('/')[-1], 'tokenizer')
-        lm_model = AutoModelForCausalLM.from_pretrained(args.lm_model_name)
-        lm_tokenizer = AutoTokenizer.from_pretrained(args.lm_model_name)
-        lm_model = lm_model.to(args.device)
+    # if args.lm_model_name == 'same':
+    #     lm_model = model
+    #     lm_tokenizer = tokenizer
+    # else:
+    #     # lm_model = load_local_model_or_tokenizer(args.lm_model_name.split('/')[-1], 'model')
+    #     # lm_tokenizer = load_local_model_or_tokenizer(args.lm_model_name.split('/')[-1], 'tokenizer')
+    #     lm_model = AutoModelForCausalLM.from_pretrained(args.lm_model_name,device_map="auto")
+    #     lm_tokenizer = AutoTokenizer.from_pretrained(args.lm_model_name)
+    #     # lm_model = lm_model.to(args.device)
 
     c4_sliced_and_filted = load_from_disk(
         os.path.join(ROOT_PATH, 'c4-train.00000-of-00512_sliced'))
     c4_sliced_and_filted = c4_sliced_and_filted['train'].shuffle(seed=args.sample_seed).select(
         range(args.sample_num))
+    
+    # prefixes = []
 
-    lm_message_model = LMMessageModel(tokenizer=tokenizer, lm_model=lm_model,
-                                      lm_tokenizer=lm_tokenizer,
+    # with open('open-generation-data/gpt3_davinci_003_300_len.jsonl_pp', 'r', encoding='utf-8') as file:
+    #     for line in file:
+    #         data = json.loads(line.strip())
+    #         prefixes.append(data['prefix'])
+    # random.seed(args.sample_seed)
+    # random.shuffle(prefixes)
+            
+    # OpenGen = prefixes[:args.sample_num]
+    # ds = load_dataset("/ailab/user/jianghaoyu/.cache/huggingface/datasets/ChristophSchuhmann___parquet/ChristophSchuhmann--essays-with-instructions-1ccdc3e324b61b42")
+    # essays_sliced_and_filted = ds['train'].shuffle(seed=args.sample_seed).select(range(args.sample_num))
+
+
+    lm_message_model = LMMessageModel_update(tokenizer=tokenizer, lm_model=model,
+                                      lm_tokenizer=tokenizer,
                                       delta=args.delta, lm_prefix_len=args.lm_prefix_len,
                                       lm_topk=args.lm_top_k, message_code_len=args.message_code_len,
-                                      random_permutation_num=args.random_permutation_num)
+                                      random_permutation_num=args.random_permutation_num,shifts=args.shifts)
 
-    watermark_processor = WmProcessorMessageModel(message_model=lm_message_model,
+    watermark_processor = WmProcessorMessageModel_update(message_model=lm_message_model,
                                                   tokenizer=tokenizer,
                                                   encode_ratio=args.encode_ratio,
                                                   max_confidence_lbd=args.max_confidence_lbd,
                                                   strategy=args.message_model_strategy,
                                                   message=args.message,
                                                   top_k=args.top_k,
-                                                  )
+                                                  )  
 
     min_length_processor = MinLengthLogitsProcessor(min_length=10000,
                                                     # just to make sure there's no EOS
@@ -90,6 +107,16 @@ def main(args: WmLMArgs):
                'confidence': []}
 
     try:
+        text_list = c4_sliced_and_filted['text']
+        total_length = len(text_list)
+
+        # 计算一半的长度
+        half_length = total_length // 4
+
+        # 获取前一半的数据
+        half_text_list = text_list[:half_length]
+        
+        # essays_sliced_and_filted['essays']
         for text in tqdm(c4_sliced_and_filted['text']):
             tokenized_input = tokenizer(text, return_tensors='pt').to(model.device)
             tokenized_input = truncate(tokenized_input, max_length=args.prompt_length)
@@ -98,7 +125,8 @@ def main(args: WmLMArgs):
             output_tokens = model.generate(**tokenized_input,
                                            temperature=args.temperature,
                                            max_new_tokens=args.generated_length,
-                                           num_beams=args.num_beams,
+                                        #    num_beams=args.num_beams,
+                                        top_k=5,top_p=0.95,do_sample=True,
                                            logits_processor=logit_processor)
 
             output_text = \
@@ -114,7 +142,7 @@ def main(args: WmLMArgs):
             results['prefix_and_output_text'].append(prefix_and_output_text)
 
             decoded_message, other_information = watermark_processor.decode(output_text, disable_tqdm=True)
-
+            print(decoded_message)
             confidences = other_information[1]
 
             available_message_num = args.generated_length // (

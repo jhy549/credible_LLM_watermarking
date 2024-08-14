@@ -2,11 +2,10 @@
   "builder_name": "json",
   "citation": "",
   "config_name": "default",
-  "dataset_name": "json",
   "dataset_size": 73987074,
   "description": "",
   "download_checksums": {
-    "/home/jianghaoyu/CTWL/./c4-train.00000-of-00512.json": {
+    "/ailab/user/jianghaoyu/MWM/c4-train.00000-of-00512.json": {
       "num_bytes": 75445783,
       "checksum": null
     }

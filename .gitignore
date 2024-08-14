@@ -1,2 +1,14 @@
 */__pycache__
 **/*.pyc
+*/__pycache__
+**/*.pyc
+*.log
+figs/
+dat/
+C4/
+c4-train.00000-of-00512_sliced/*
+c4-train.00000-of-00512_sliced_for_cp/*
+my_watermark_result/*
+open-generation-data/
+*.out
+**/*.pyc

@@ -130,7 +130,7 @@ def main(args: WmLMArgs):
     wm_precessor_message_model = WmProcessorMessageModel(message_model=lm_message_model,
                                                          tokenizer=lm_tokenizer,
                                                          encode_ratio=10, max_confidence_lbd=0.5,
-                                                         strategy='vanilla',
+                                                         strategy='max_confidence_updated',
                                                          message=[42, 43, 46, 47, 48, 49, 50, 51,
                                                                   52, 53])
 

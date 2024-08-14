@@ -45,20 +45,30 @@ from watermarking.watermark_processors.message_models.lm_message_model import LM
 from watermarking.watermark_processors.message_model_processor import WmProcessorMessageModel
 
 lm_message_model = LMMessageModel(tokenizer=tokenizer,lm_model=lm_model,lm_tokenizer=lm_tokenizer,
-    delta = 5.5, lm_prefix_len=10, lm_topk=-1, message_code_len = 10,random_permutation_num=50)
+    delta = 5.5, lm_prefix_len=10, lm_topk=-1, message_code_len = 1,random_permutation_num=50)
 wm_precessor_message_model = WmProcessorMessageModel(message_model=lm_message_model,tokenizer=tokenizer,
-    encode_ratio=1.5,max_confidence_lbd=0.5,strategy='max_confidence_updated', message=[322,1,1002])
+    encode_ratio=8,max_confidence_lbd=0.5,strategy='max_confidence_updated', message=[1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0])
 
 start_length = tokenized_input['input_ids'].shape[-1]
 wm_precessor_message_model.start_length = start_length
-output_tokens = model.generate(**tokenized_input, max_new_tokens=55, num_beams=4,
+output_tokens = model.generate(**tokenized_input, max_new_tokens=170, num_beams=4,
                                logits_processor=LogitsProcessorList(
                                    [min_length_processor, repetition_processor,
                                     wm_precessor_message_model]))
 
 output_text = tokenizer.decode(output_tokens[0][start_length:],
                                skip_special_tokens=True)
-logging.info(output_text)
+# logging.info(output_text)
+# print(output_text)
+output_text = """express their opinions on Chiyangwa.
+"I don't understand why he was permitted to run," Dinha remarked.
+"He lacked any grassroots backing. He is merely favored among the party's leadership.
+"The fact that he was allowed to compete indicates that something suspicious is happening."
+Dinha accused Zimra of conspiring with Chiyangwa to manipulate the primary election outcomes.
+"Zimra colluded with him to alter the results," he stated.
+During his comments at the Zvimba Central Primary School auditorium on Saturday, Chiwenga expressed confidence that he would emerge triumphant.
+"I want to assure you that I am going to win the upcoming elections.
+"There is no such thing as rigging. We have done everything possible to"""
 prefix_and_output_text = tokenizer.decode(output_tokens[0], skip_special_tokens=True)
 log_probs = wm_precessor_message_model.decode(output_text)
 # print(log_probs) 

@@ -161,6 +161,8 @@ class LMPredictions:
         left_mask = 1 - eq_mask.cumsum(-1) + eq_mask 
         # print(eq_mask.cumsum(-1))
         # print(left_mask)
+        # print((shuffled_lm_probs * left_mask).sum(-1))
+
         isinAs = (shuffled_lm_probs * left_mask).sum(-1) >= 0.5
         # print(len(isinAs))
 

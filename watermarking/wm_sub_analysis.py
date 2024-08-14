@@ -19,7 +19,7 @@ class SubstitutionArgs:
     sub_replacement_proportion: float = 0.1
     sub_attempt_rate: float = 3.0
     sub_logit_threshold: float = 1.0
-    oracle_model_name = 'facebook/opt-2.7b'
+    oracle_model_name = 'fhuggyllama/llama-13b'
     sub_normalize: bool = True
 
     @property

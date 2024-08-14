@@ -4,7 +4,7 @@ from watermarking.utils.text_tools import truncate
 
 from transformers import AutoTokenizer
 
-c4 = load_dataset('json',data_files='../c4/realnewslike/c4-train.00102-of-00512.json')
+c4 = load_dataset('json',data_files='c4-train.00102-of-00512.json')
 
 def filter(sample, tokenizer,min_length = 1000):
     # 500: 300 prompt length + 200 output length
@@ -17,7 +17,7 @@ def apply_truncate(example,max_length = 1000):
     example['truncated_text'] = truncated_text
     return example
 
-tokenizer = AutoTokenizer.from_pretrained("facebook/opt-1.3b")
+tokenizer = AutoTokenizer.from_pretrained("/ailab/user/jianghaoyu/.cache/huggingface/hub/models--huggyllama--llama-7b/snapshots/4782ad278652c7c71b72204d462d6d01eaaf7549")
 c4_filtered  = c4.filter(partial(filter,tokenizer=tokenizer))
 c4_filtered = c4_filtered.map(apply_truncate)
 

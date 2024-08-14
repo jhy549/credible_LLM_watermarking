@@ -12,7 +12,52 @@ from ...utils.hash_fn import Hash1, random_shuffle
 from ...utils.random_utils import np_temp_random
 
 HfTokenizer = Union[PreTrainedTokenizerFast, PreTrainedTokenizer]
+import logging
+logging.basicConfig(filename='example.log', level=logging.DEBUG, format='%(asctime)s:%(levelname)s:%(message)s')
+torch.set_printoptions(threshold=np.inf)
+import numpy as np
+import matplotlib.pyplot as plt
+from datetime import datetime
 
+
+import hashlib
+
+def find_best_window_per_row(shuffled_lm_probs, window_size, threshold=0.3):
+    adequate_windows = []
+    for row in shuffled_lm_probs:
+        adequate_window = None
+
+        for i in range(len(row) - window_size + 1):
+            window_sum = torch.sum(row[i:i + window_size])
+
+            if window_sum > threshold:
+                adequate_window = (i, i + window_size - 1)
+                break  # 找到第一个满足条件的窗口后立即停止搜索
+
+        adequate_windows.append(adequate_window)
+    
+    return adequate_windows
+
+def hash_seed(seed: int, max_value: int) -> int:
+    hash_object = hashlib.sha256(str(seed).encode())
+    hash_value = int(hash_object.hexdigest(), 16)
+    return hash_value % max_value
+# def hash_seed(seed: int, max_value: int) -> int:
+#     key = seed
+#     key = (~key) + (key << 21)
+#     key = key ^ (key >> 24)
+#     key = (key + (key << 3)) + (key << 8)
+#     key = key ^ (key >> 14)
+#     key = (key + (key << 2)) + (key << 4)
+#     key = key ^ (key >> 28)
+#     key = key + (key << 31)
+
+#     key = (key + (key << 3)) + (key << 8)
+#     key = key ^ (key >> 14)
+#     key = (key + (key << 2)) + (key << 4)
+#     key = key ^ (key >> 28)
+    
+#     return key % max_value
 
 class LMPredictions:
     def __init__(self, public_lm_probs: torch.Tensor, delta, top_k: int = -1, cache_A=True):
@@ -28,6 +73,7 @@ class LMPredictions:
         self.vocab_size = public_lm_probs.shape[-1]
         self.cache_A = cache_A
         self.delta = delta
+        self.is_in_As_for_message_count = 0
 
     @property
     def topk_indices(self) -> torch.Tensor:
@@ -50,7 +96,7 @@ class LMPredictions:
         return self._topk_public_lm_probs
 
 
-    def P_message_single(self, seeds: torch.Tensor) -> torch.Tensor:
+    def P_message_single_1(self, seeds: torch.Tensor) -> torch.Tensor:
         '''
         :param batch_idx: int
         :param seeds: torch.LongTensor of shape [bsz]
@@ -76,28 +122,158 @@ class LMPredictions:
             shuffle_idxs = shuffle_idxs.unsqueeze(0)
         shuffled_lm_probs = single_lm_probs.gather(-1, shuffle_idxs)
 
-        mask = (shuffled_lm_probs.cumsum(-1) < 0.5).to(shuffled_lm_probs.dtype)
-    
+        # mask = (shuffled_lm_probs.cumsum(-1) < 0.5).to(shuffled_lm_probs.dtype)
+        # mask_2 = (shuffled_lm_probs.cumsum(-1) >= 0.5).to(shuffled_lm_probs.dtype)
         # 随机列表
         # noise = -random.choice([0.5, 1.5, 2.5, 3.5])
-        # shuffled_lm_probs_with_noise = -(shuffled_lm_probs.cumsum(-1) < 0.5).to(shuffled_lm_probs.dtype) + noise * mask
-        
+        # shuffled_lm_probs_with_noise = -(shuffled_lm_probs.cumsum(-1) < 0.5).to(shuffled_lm_probs.dtype) + noise * mask-(shuffled_lm_probs.cumsum(-1) >= 0.5).to(shuffled_lm_probs.dtype) + noise * mask_2
+    #     shuffled_lm_probs_with_noise = (
+    # (shuffled_lm_probs.cumsum(-1) < 0.5).to(shuffled_lm_probs.dtype) * (-random.choice([1.5, 2.5, 3.5, 4.5, 5.5]))
+    # + (shuffled_lm_probs.cumsum(-1) >= 0.5).to(shuffled_lm_probs.dtype) * (random.choice([ 1.5, 2.5, 3.5, 4.5, 5.5])))
+       
         #均匀分布
         # noise = np.random.uniform(low=-5, high=-0)
         # shuffled_lm_probs_with_noise = (shuffled_lm_probs.cumsum(-1) < 0.5).to(shuffled_lm_probs.dtype) * noise
         
         #指数分布
-        noise = -np.random.exponential(scale=1.5)
-        shuffled_lm_probs_with_noise = (shuffled_lm_probs.cumsum(-1) < 0.9).to(shuffled_lm_probs.dtype) * noise
+        # noise = -np.random.exponential(scale=1.5)
+        # shuffled_lm_probs_with_noise = (shuffled_lm_probs.cumsum(-1) < 0.9).to(shuffled_lm_probs.dtype) * noise
         
 
-        p_message = single_lm_probs.scatter(dim=-1, index=shuffle_idxs, src=shuffled_lm_probs_with_noise)
-        # shuffled_lm_probs_black_mask = (shuffled_lm_probs.cumsum(-1) < 0.5).to(shuffled_lm_probs.dtype) * (-self.delta)
+        # p_message = single_lm_probs.scatter(dim=-1, index=shuffle_idxs, src=shuffled_lm_probs_with_noise)
+        shuffled_lm_probs_black_mask = (shuffled_lm_probs.cumsum(-1) >0.3).to(shuffled_lm_probs.dtype) * (self.delta)
+        # for i in range((shuffled_lm_probs.cumsum(-1) >0.9).shape[0]):
+        
+        #     print((shuffled_lm_probs.cumsum(-1) >0.9)[i].sum())
         # # TO DO here we change single_lm_probs in-place!
-        # p_message = single_lm_probs.scatter_(dim=-1, index=shuffle_idxs,
-        #                                      src=shuffled_lm_probs_black_mask)
+        # print("下一个")
+        p_message = single_lm_probs.scatter_(dim=-1, index=shuffle_idxs,
+                                             src=shuffled_lm_probs_black_mask)
 
         return p_message
+    
+    def P_message_single(self, seeds: torch.Tensor) -> torch.Tensor:
+        '''
+        :param seeds: torch.LongTensor of shape [bsz]
+
+        :return: P_message, torch.FloatTensor of shape [bsz, vocab_size]
+        '''
+        single_lm_probs = self.topk_public_lm_probs if self.top_k > 0 else self.public_lm_probs
+
+        assert seeds.dim() == 1 and seeds.numel() == single_lm_probs.shape[0]
+        
+        # print(seeds.shape)
+
+        bsz, vocab_size = single_lm_probs.shape
+
+
+        # Step 1: 选出前1000个概率最大的单词的索引
+        topk_probs, topk_indices = torch.topk(single_lm_probs, k=10, dim=-1)
+        # print(topk_probs.sum())
+
+        # Step 2: 创建掩码数组
+        mask = torch.zeros((bsz, vocab_size), device=single_lm_probs.device, dtype=torch.bool)
+        mask.scatter_(1, topk_indices, True)
+
+        # Step 3: 根据seed通过哈希函数单向确定起始位置
+        max_start_position = vocab_size - 10
+        # start_positions = torch.tensor([hash_seed(seed.item(), max_start_position) for seed in seeds], device=single_lm_probs.device)
+        
+        start_positions = torch.zeros(bsz, device=single_lm_probs.device, dtype=torch.long)
+
+        for i in range(bsz):
+            torch.manual_seed(seeds[i].item())  # 使用每个 seed 来设置随机种子
+            start_positions[i] = torch.randint(0, max_start_position, (1,), device=single_lm_probs.device)
+            # print(start_positions)
+        # Step 4: 创建新的shuffle_idxs数组
+        shuffle_idxs = torch.zeros((bsz, vocab_size), device=single_lm_probs.device, dtype=torch.long)
+        
+        # shuffled_lm_probs_black_mask = torch.zeros((bsz, vocab_size), device=single_lm_probs.device, dtype=torch.bool)
+
+
+        for i in range(bsz):
+            # 获取前10个单词的索引
+            topk_range = torch.arange(start_positions[i], start_positions[i] + 10, device=single_lm_probs.device) % vocab_size
+            # print(topk_range)
+            shuffle_idxs[i, topk_range] = topk_indices[i]
+            # print(shuffle_idxs[i, topk_range])
+            # shuffled_lm_probs_black_mask[i, topk_range] = True
+            # 获取剩余部分的索引
+            remaining_indices = torch.arange(vocab_size, device=single_lm_probs.device)
+            remaining_indices = remaining_indices[~mask[i]]
+            seeds_i=seeds[i].unsqueeze(0)
+            # print(seeds_i.shape)
+            # print(remaining_indices.size(0))
+            # 使用random_shuffle函数打乱其余的索引
+            shuffled_remaining_indices = remaining_indices[random_shuffle(seeds_i, remaining_indices.size(0), single_lm_probs.device)]
+            
+            # 填充剩余部分的索引
+            remaining_range = torch.cat((torch.arange(0, start_positions[i], device=single_lm_probs.device),
+                                        torch.arange(start_positions[i] + 10, vocab_size, device=single_lm_probs.device) % vocab_size))
+            # print(remaining_range.shape,shuffled_remaining_indices.shape)
+            shuffle_idxs[i, remaining_range] = shuffled_remaining_indices
+
+        # Step 5: 给这10个单词加上偏置
+        shuffled_lm_probs = single_lm_probs.gather(-1, shuffle_idxs)
+        
+        shuffled_lm_probs_black_mask = torch.zeros_like(shuffled_lm_probs, dtype=shuffled_lm_probs.dtype,device=single_lm_probs.device)
+        for i in range(bsz):
+            # topk_range = torch.arange(start_positions[i], start_positions[i] + 10, device=single_lm_probs.device) % vocab_size
+            cumulative_probs = shuffled_lm_probs[i, :start_positions[i] + 10].cumsum(dim=-1)
+            # print(cumulative_probs)
+            mask_0_7 = (cumulative_probs < 0.3).to(shuffled_lm_probs.dtype)
+            # print(len(mask_0_7))
+            # print(mask_0_7.sum())
+            # print(mask_0_7.sum())
+            shuffled_lm_probs_black_mask[i, :start_positions[i] + 10] = mask_0_7*(-1.5)
+        # print(shuffled_lm_probs_black_mask)
+        # shuffled_lm_probs_black_mask = shuffled_lm_probs_black_mask*1.5
+        # shuffled_lm_probs_black_mask = (shuffled_lm_probs.cumsum(-1) >= 0.7).to(shuffled_lm_probs.dtype) * 1.5
+        # print(shuffled_lm_probs_black_mask_1.shape,shuffled_lm_probs_black_mask.shape)
+
+        # Step 6: 返回处理后的概率分布
+        p_message = single_lm_probs.scatter(-1, shuffle_idxs, shuffled_lm_probs_black_mask)
+
+        return p_message
+        
+    def P_message_single_change(self, seeds: torch.Tensor) -> torch.Tensor:
+        '''
+        :param batch_idx: int
+        :param seeds: torch.LongTensor of shape [bsz]
+
+        :return: P_message, torch.FloatTensor of shape [bsz, vocab_size]
+        '''
+        single_lm_probs = self.topk_public_lm_probs if self.top_k > 0 \
+            else self.public_lm_probs
+
+        assert seeds.dim() == 1 and seeds.numel() == single_lm_probs.shape[0]
+
+        shuffle_idxs = random_shuffle(key=seeds,
+                                    n=self.top_k if self.top_k > 0 else self.vocab_size,
+                                    device=self.public_lm_probs.device)
+
+        if shuffle_idxs.dim() == 1:
+            shuffle_idxs = shuffle_idxs.unsqueeze(0)
+        shuffled_lm_probs = single_lm_probs.gather(-1, shuffle_idxs)
+        
+        shuffled_lm_probs_black_mask = ((shuffled_lm_probs.cumsum(-1) >0.3) & (shuffled_lm_probs.cumsum(-1)<0.8) ).to(shuffled_lm_probs.dtype) * (-self.delta)
+
+        # # 使用滑动窗口生成更精确的shuffled_lm_probs_black_mask
+        # window_size = 10000  # 可以根据需要调整窗口大小
+        # best_windows = find_best_window_per_row(shuffled_lm_probs, window_size, threshold=0.5)
+
+        # shuffled_lm_probs_black_mask = torch.zeros_like(shuffled_lm_probs)
+
+        # for row_idx, best_window in enumerate(best_windows):
+        #     if best_window:
+        #         start, end = best_window
+        #         shuffled_lm_probs_black_mask[row_idx, start:end+1] = self.delta
+
+        p_message = single_lm_probs.scatter_(dim=-1, index=shuffle_idxs,
+                                            src=shuffled_lm_probs_black_mask)
+
+        return p_message
+
 
     def is_in_As_for_message(self, batch_idx: int, seeds: torch.Tensor,
                              x_cur_idx: int) -> \
@@ -109,6 +285,122 @@ class LMPredictions:
 
         :return: [x_cur_id in A for A in As], torch.FloatTensor of shape [vocab_size]
         '''
+        # self.is_in_As_for_message_count += 1
+        # print(self.is_in_As_for_message_count)
+        assert seeds.dim() == 1
+        # print(seeds.shape)
+        single_lm_probs = self.topk_public_lm_probs[batch_idx:batch_idx + 1] if self.top_k > 0 \
+            else self.public_lm_probs[batch_idx:batch_idx + 1]
+        
+        # print(single_lm_probs)
+        # print(torch.topk(single_lm_probs, k=10, dim=-1))
+        # shuffle_idxs = random_shuffle(key=seeds,
+        #                               n=self.top_k if self.top_k > 0 else self.vocab_size,
+        #                               device=self.public_lm_probs.device,)
+        # # print(shuffle_idxs.shape)
+        # if shuffle_idxs.dim() == 1:
+        #     shuffle_idxs = shuffle_idxs.unsqueeze(0)
+        # print(shuffle_idxs.shape)
+        
+        
+        bsz = seeds.shape[0]
+        vocab_size = single_lm_probs.shape[1]
+        
+        # print(bsz,vocab_size)
+
+
+        # Step 1: 选出前10个概率最大的单词的索引  topk的索引可以尝试逆向
+        topk_indices = torch.topk(single_lm_probs, k=10, dim=-1).indices
+        # print(topk_indices.shape)
+
+        # Step 2: 创建掩码数组
+        mask = torch.zeros((1, vocab_size), device=single_lm_probs.device, dtype=torch.bool)
+        mask.scatter_(1, topk_indices, True)
+        mask = mask.expand(bsz, -1)
+        # print(mask)
+
+        # Step 3: 根据seed通过哈希函数单向确定起始位置
+        max_start_position = vocab_size - 10
+        # start_positions = torch.tensor([hash_seed(seed.item(), max_start_position) for seed in seeds], device=single_lm_probs.device)
+        start_positions = torch.zeros(bsz, device=single_lm_probs.device, dtype=torch.long)
+
+        for i in range(bsz):
+            torch.manual_seed(seeds[i].item())  # 使用每个 seed 来设置随机种子
+            start_positions[i] = torch.randint(0, max_start_position, (1,), device=single_lm_probs.device)
+        # Step 4: 创建新的shuffle_idxs数组
+        shuffle_idxs = torch.zeros((bsz, vocab_size), device=single_lm_probs.device, dtype=torch.long)
+
+        for i in range(bsz):
+            # 获取前10个单词的索引
+            topk_range = torch.arange(start_positions[i], start_positions[i] + 10, device=single_lm_probs.device) % vocab_size
+            shuffle_idxs[i, topk_range] = topk_indices[0]
+
+            # 获取剩余部分的索引
+            remaining_indices = torch.arange(vocab_size, device=single_lm_probs.device)
+            remaining_indices = remaining_indices[~mask[i]]
+            seeds_i=seeds[i].unsqueeze(0)
+            # print(remaining_indices.size(0))
+            # 使用random_shuffle函数打乱其余的索引
+            shuffled_remaining_indices = remaining_indices[random_shuffle(seeds_i, remaining_indices.size(0), single_lm_probs.device)]
+            
+            # 填充剩余部分的索引
+            remaining_range = torch.cat((torch.arange(0, start_positions[i], device=single_lm_probs.device),
+                                        torch.arange(start_positions[i] + 10, vocab_size, device=single_lm_probs.device) % vocab_size))
+            # print(remaining_range.shape,shuffled_remaining_indices.shape)
+            shuffle_idxs[i, remaining_range] = shuffled_remaining_indices
+        
+
+       
+        # print(single_lm_probs[0][12345])
+        single_lm_probs = single_lm_probs.expand(shuffle_idxs.shape[0], -1)
+        shuffled_lm_probs = single_lm_probs.gather(-1, shuffle_idxs)
+        # print(x_cur_idx)
+        eq_mask = torch.eq(shuffle_idxs, x_cur_idx)
+        left_mask = 1 - eq_mask.cumsum(-1) + eq_mask 
+        # print(left_mask.shape)
+        # print(eq_mask.cumsum(-1))
+        # count_ones = torch.sum(left_mask[0] == 1).item()
+        # print(count_ones)
+        # batch_size, seq_length = left_mask.shape
+        # new_mask = torch.zeros_like(left_mask)
+
+        # # 找到每一行最后一个 1 的位置
+        # last_one_pos = (left_mask.cumsum(dim=1) == left_mask.sum(dim=1, keepdim=True)).max(dim=1)[1]
+
+        # # 设置掩码：从最后一个 1 往前 1000 个位置为 1，其余为 0
+        # for i in range(batch_size):
+        #     end_pos = last_one_pos[i].item()
+        #     start_pos = max(0, end_pos - 49)  # 确保起始位置不小于 0
+        #     new_mask[i, start_pos:end_pos + 1] = 1
+            # print(new_mask[i].sum())
+        # print("开始")
+        print((shuffled_lm_probs * left_mask).sum(-1))
+        isinAs = ((shuffled_lm_probs * left_mask).sum(-1) >= 0.3)
+        # print(isinAs)
+        # print(isinAs.sum(dim=-1))
+        # print(shuffled_lm_probs[0][new_mask[0]==1])
+        # print(len(isinAs))
+        # print(isinAs)
+            
+
+        # left_mask = 1 - eq_mask.cumsum(-1)
+        # isinAs = (shuffled_lm_probs * left_mask).sum(-1) < 0.5
+        return isinAs
+
+
+
+    def is_in_As_for_message_change(self, batch_idx: int, seeds: torch.Tensor,
+                             x_cur_idx: int) -> \
+            Union[List[torch.Tensor], torch.Tensor]:
+        '''
+        :param batch_idx: int
+        :param seeds: torch.LongTensor of shape [num_seeds]
+        :param x_cur_idx: int or None
+
+        :return: [x_cur_id in A for A in As], torch.FloatTensor of shape [vocab_size]
+        '''
+        # self.is_in_As_for_message_count += 1
+        # print(self.is_in_As_for_message_count)
         assert seeds.dim() == 1
 
         shuffle_idxs = random_shuffle(key=seeds,
@@ -128,8 +420,14 @@ class LMPredictions:
         left_mask = 1 - eq_mask.cumsum(-1) + eq_mask 
         # print(eq_mask.cumsum(-1))
         # print(left_mask)
-        isinAs = (shuffled_lm_probs * left_mask).sum(-1) >= 0.9
+        # cumsum_probs = shuffled_lm_probs.cumsum(-1)
+        # watermark_mask = 1-((cumsum_probs >= 0.01) & (cumsum_probs < 0.9)).to(shuffled_lm_probs.dtype)
+        # print(watermark_mask)
+        
+        isinAs = ((shuffled_lm_probs * left_mask).sum(-1) >= 0.8)
         # print(len(isinAs))
+        # print(isinAs)
+            
 
         # left_mask = 1 - eq_mask.cumsum(-1)
         # isinAs = (shuffled_lm_probs * left_mask).sum(-1) < 0.5
@@ -282,10 +580,13 @@ class LMMessageModel_update(BaseMessageModelFast):
         if x_prefix.shape[1] < self.hash_prefix_len:
             raise TextTooShortError
         x_prefix = x_prefix[:, -self.hash_prefix_len:]
+        # print(x_prefix.shape)
         if transform:
             x_prefix = self.tokenizer_id_2_lm_tokenizer_id_list[x_prefix]
         seed_elements = [tuple(_.tolist()) for _ in x_prefix]
+        # seed_elements = [(29889,) for _ in range(x_prefix.shape[0])]
         # print(seed_elements)
+        
         return seed_elements
 
     def get_x_prefix_seeds(self, x_prefix, transform: bool):
@@ -383,17 +684,24 @@ class LMMessageModel_update(BaseMessageModelFast):
             x_cur = self.tokenizer_id_2_lm_tokenizer_id_list[x_cur]
 
         x_prefix_seeds = self.get_x_prefix_seeds(x_prefix, transform=True)
+        # print(x_prefix_seeds.shape)
+        # x_prefix_seeds = torch.tensor([5768399737913331976],device=x_prefix.device)
+        
         x_prefix_and_message_seeds = self.get_x_prefix_and_message_seeds(
             messages,
             x_prefix_seeds=x_prefix_seeds)
+        
+        # print(x_prefix_and_message_seeds)
 
 
         lm_predictions = LMPredictions(lm_predictions, delta=self.delta, top_k=self.lm_top_k,
                                        cache_A=False)
         x_prefix_and_message_idxs = x_prefix_and_message_seeds % self.random_permutation_num
+        # print(x_prefix_and_message_idxs.shape)
         x_prefix_and_A_seeds = self.get_x_prefix_A_seeds(x_prefix_seeds=x_prefix_seeds,
                                                          random_permutation_idxs=x_prefix_and_message_idxs)
 
+        # print(x_prefix_and_A_seeds)
         # x_prefix_and_message_and_x_cur_seeds = self.get_x_prefix_and_message_and_x_cur_seeds(
         #     x_prefix, messages, x_cur, x_prefix_seeds=x_prefix_seeds,
         #     x_prefix_and_message_seeds=x_prefix_and_message_seeds)
@@ -431,6 +739,8 @@ class LMMessageModel_update(BaseMessageModelFast):
         assert x_cur.shape[1] == 1
         # print("该阶段message",messages)
         x_prefix_seeds = self.get_x_prefix_seeds(x_prefix, transform=False)
+        # x_prefix_seeds = torch.tensor([5768399737913331976],device=x_prefix.device)
+
 
         lm_predictions = LMPredictions(lm_predictions, delta=self.delta, top_k=self.lm_top_k,  #self.lm_top_k=-1
                                        cache_A=False)
@@ -457,7 +767,7 @@ class LMMessageModel_update(BaseMessageModelFast):
                 # print((x_prefix_and_A_seeds[batch_idx]>0).sum())
                 is_in_certain_A = torch.gather(in_A_s, 0, x_prefix_and_message_idxs[batch_idx])
                 # print(is_in_certain_A.sum())
-                single_log_Ps = is_in_certain_A.float() * self.delta  #torch.Size([1024])
+                single_log_Ps = is_in_certain_A.float() * 0.01  #torch.Size([1024])
                 # print(single_log_Ps.shape)
                 single_log_Ps = single_log_Ps.reshape(1, -1, 1)   #torch.Size([1, 1024, 1])
                 # print(single_log_Ps.shape)

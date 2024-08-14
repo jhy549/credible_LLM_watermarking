@@ -58,8 +58,9 @@ def main(args: WmAnalysisArgs):
             if oracle_model is None:
                 oracle_model = AutoModelForCausalLM.from_pretrained(args.oracle_model_name)
         else:
-            raise NotImplementedError(f'oracle_model_name: {args.oracle_model_name}')
-        oracle_model = oracle_model.to(args.device)
+            oracle_tokenizer = AutoTokenizer.from_pretrained("huggyllama/llama-13b")
+            oracle_model = AutoModelForCausalLM.from_pretrained("huggyllama/llama-13b",device_map="auto")
+        # oracle_model = oracle_model.to(args.device)
         losses, ppls = [], []
 
         for text, prefix_and_output_text, output_text in tqdm(

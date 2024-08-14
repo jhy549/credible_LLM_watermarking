@@ -7,7 +7,7 @@ import random
 
 
 class SubstitutionAttacker:
-    def __init__(self, model_name='roberta-base', device='cuda:0', replacement_proportion=0.05,
+    def __init__(self, model_name='roberta-base', device='cuda:7', replacement_proportion=0.05,
                  attempt_rate=3., logit_threshold=1., normalize = False):
         warnings.warn("Do not forget to set global random seed!")
 

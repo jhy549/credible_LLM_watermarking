@@ -1,12 +1,14 @@
 import json
 
 from tqdm import tqdm
-
+from transformers import AutoTokenizer, AutoModelForCausalLM
 import watermarking.watermark_processor
 from watermarking.utils.load_local import load_local_model_or_tokenizer
 from datasets import load_dataset, load_from_disk
 from watermarking.watermark_processors.message_models.lm_message_model import LMMessageModel
 from watermarking.watermark_processors.message_model_processor import WmProcessorMessageModel
+from watermarking.watermark_processors.message_models.lm_message_model_update_1 import LMMessageModel_update
+from watermarking.watermark_processors.message_model_processor_update import WmProcessorMessageModel_update
 from watermarking.arg_classes.wm_arg_class import WmLMArgs
 import random
 
@@ -119,38 +121,46 @@ def insert_watermark(x_watermarked, x_human_written):
 def insert_watermark_for_sentences(x_watermarked, x_human_written, seed=42):
     randomer = random.Random()
     randomer.seed(seed)
+
     x_human_written = randomer.sample(x_human_written, k=len(x_watermarked))
+    print(len(x_watermarked[0]))
     x_cped = [insert_watermark(x_wm_single, x_human_single) for x_wm_single, x_human_single in
               zip(x_watermarked, x_human_written)]
     return x_cped
 
 
 def main(args: WmLMArgs, control_args: RunControlArgs):
-    results = args.load_result()
+    # results = args.load_result()
+    path = '/ailab/user/jianghaoyu/MWM/my_watermark_result/lm_new_7_10/huggyllama-llama-7b_1.5_1.5_300_200_200_42_42_20_10_4_1.0_10_-1_300_max_confidence_updated_0.5_huggyllama/llama-7b_1000_my.json'
+    import json
+    with open(path, 'r') as f:
+        results = json.load(f)
 
     if 'cp-analysis' in results and (not control_args.cover_old):
         print('Existing result found, skip')
         return
 
-    tokenizer = load_local_model_or_tokenizer(args.model_name, 'tokenizer')
-    lm_tokenizer = load_local_model_or_tokenizer(args.lm_model_name, 'tokenizer')
-    lm_model = load_local_model_or_tokenizer(args.lm_model_name, 'model')
-    lm_model = lm_model.to(args.device)
+    # tokenizer = load_local_model_or_tokenizer(args.model_name, 'tokenizer')
+    # lm_tokenizer = load_local_model_or_tokenizer(args.lm_model_name, 'tokenizer')
+    # lm_model = load_local_model_or_tokenizer(args.lm_model_name, 'model')
+    # lm_model = lm_model.to(args.device)
+    lm_model = AutoModelForCausalLM.from_pretrained("/ailab/user/jianghaoyu/.cache/huggingface/hub/models--huggyllama--llama-7b/snapshots/4782ad278652c7c71b72204d462d6d01eaaf7549" ,device_map="auto")
+    tokenizer = AutoTokenizer.from_pretrained("/ailab/user/jianghaoyu/.cache/huggingface/hub/models--huggyllama--llama-7b/snapshots/4782ad278652c7c71b72204d462d6d01eaaf7549")
     lm_message_model = LMMessageModel(tokenizer=tokenizer, lm_model=lm_model,
-                                      lm_tokenizer=lm_tokenizer,
-                                      delta=1., lm_prefix_len=10, lm_topk=-1, message_code_len=20,
-                                      random_permutation_num=100)
+                                      lm_tokenizer=tokenizer,
+                                      delta=1.5, lm_prefix_len=10, lm_topk=-1, message_code_len=20,
+                                      random_permutation_num=300)
     wm_precessor_message_model = WmProcessorMessageModel(message_model=lm_message_model,
                                                          tokenizer=tokenizer,
                                                          encode_ratio=10, max_confidence_lbd=0.5,
-                                                         strategy='max_confidence',
-                                                         message=[42, 43, 46, 47, 48, 49, 50, 51,
-                                                                  52, 53])
+                                                         strategy='max_confidence_updated',
+                                                         message=[42])
 
     random.seed(args.sample_seed)
     message_filter = MessageFilter(device=args.device)
     human_written_data_for_cp = load_from_disk('./c4-train.00102-of-00512_sliced_for_cp/')
     x_wms = results['output_text']
+    # print(len(x_wms))
     x_humans = human_written_data_for_cp['train']['truncated_text']
     x_cpeds = insert_watermark_for_sentences(x_wms, x_humans, seed=args.sample_seed)
 
@@ -158,7 +168,8 @@ def main(args: WmLMArgs, control_args: RunControlArgs):
     corrected = []
 
     select_num = control_args.select_num if control_args.select_num > 0 else len(x_wms)
-    for i in tqdm(range(select_num)):
+    for i in tqdm(range(200)):
+        # print(len(x_cpeds[i]))
         y = wm_precessor_message_model.decode(x_cpeds[i], disable_tqdm=True)
         zz = message_filter.filter_message(y[1][0], window_size=190, smooth_window_size=1,
                                            threshold=0.5, order=0, gap=190, avg_pool_size=10)
@@ -173,5 +184,5 @@ def main(args: WmLMArgs, control_args: RunControlArgs):
     results['cp-analysis'] = analysis_results
 
     # print(analysis_results)
-    with open(args.complete_save_file_path, 'w') as f:
+    with open(path, 'w') as f:
         json.dump(results, f, indent=4)

@@ -8,6 +8,9 @@ from watermarking.watermark_processors.message_models.lm_message_model import LM
 from watermarking.watermark_processors.message_models.random_message_model import RandomMessageModel
 from watermarking.watermark_processors.random_message_model_processor import \
     WmProcessorRandomMessageModel
+from transformers import AutoTokenizer, AutoModelForCausalLM
+from watermarking.watermark_processors.message_models.lm_message_model_update_1 import LMMessageModel_update
+from watermarking.watermark_processors.message_model_processor_update import WmProcessorMessageModel_update
 
 ROOT_PATH = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
@@ -20,17 +23,18 @@ class WmBaseArgs:
     sample_num: int = 100
     sample_seed: int = 42
     seed: int = 42
-    num_beams: int = 4
+    num_beams: int = 8
     delta: float = 1.5
     repeat_penalty: float = 1.5
     message: List[int] = field(default_factory=lambda: [42, 43, 46, 47, 48, 49, 50, 51, 52, 53])
     prompt_length: int = 300
-    generated_length: int = 200
-    message_code_len: int = 20
-    encode_ratio: float = 10.
-    device: str = 'cuda:0'
+    generated_length: int = 110
+    message_code_len: int = 10
+    encode_ratio: float = 10
+    device: str = 'cuda:7'
     root_path: str = os.path.join(ROOT_PATH, 'my_watermark_result')
     wm_strategy: str = "base"
+    shifts: List[int] = field(default_factory=lambda: [21, 24, 3, 8, 14, 2, 4, 28, 31, 3, 8, 14, 2, 4, 28])  #llama: [21, 24, 3, 8, 14, 2, 4, 28, 31, 3, 8, 14, 2, 4, 28]  falcon[4, 2, 21, 28, 14, 4, 8, 8, 3, 14, 24, 31, 3, 28, 2]  gemma[3, 8, 24, 14, 2, 4, 8, 14, 2, 28, 3, 31, 4, 28, 21]
 
     def __post_init__(self):
         if self.message_code_len == 5:
@@ -132,10 +136,10 @@ class WmRandomNoHashArgs(WmRandomArgs):
 class WmLMArgs(WmBaseArgs):
     lm_prefix_len: int = 10
     lm_top_k: int = -1
-    lm_model_name: str = 'gpt2'
+    lm_model_name: str = 'huggyllama/llama-7b'
     wm_strategy: str = "lm_new_7_10"
-    message_model_strategy: str = 'vanilla'
-    random_permutation_num: int = 100
+    message_model_strategy: str = 'max_confidence_updated'
+    random_permutation_num: int = 200
     max_confidence_lbd: float = 0.5
     top_k: int = 1000
 
@@ -155,16 +159,15 @@ class WmLMArgs(WmBaseArgs):
         if self.lm_model_name == 'same':
             raise NotImplementedError
         else:
-            lm_model = load_local_model_or_tokenizer(self.lm_model_name.split('/')[-1], 'model')
-            lm_tokenizer = load_local_model_or_tokenizer(self.lm_model_name.split('/')[-1],
-                                                         'tokenizer')
-            lm_model = lm_model.to(self.device)
+            lm_tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+            lm_model = AutoModelForCausalLM.from_pretrained(self.model_name ,device_map="auto")
+            # lm_model = lm_model.to(self.device)
             return lm_model, lm_tokenizer
 
     def get_decoder(self, lm_tokenizer=None, lm_model=None) -> WmProcessorMessageModel:
         if lm_tokenizer is None or lm_model is None:
             lm_model, lm_tokenizer = self._load_model_and_tokenizer()
-        lm_message_model = LMMessageModel(tokenizer=lm_tokenizer,
+        lm_message_model = LMMessageModel_update(tokenizer=lm_tokenizer,
                                           lm_model=lm_model,
                                           lm_tokenizer=lm_tokenizer,
                                           delta=self.delta,
@@ -173,7 +176,7 @@ class WmLMArgs(WmBaseArgs):
                                           message_code_len=self.message_code_len,
                                           random_permutation_num=self.random_permutation_num)
 
-        watermark_processor = WmProcessorMessageModel(message_model=lm_message_model,
+        watermark_processor = WmProcessorMessageModel_update(message_model=lm_message_model,
                                                       tokenizer=lm_tokenizer,
                                                       encode_ratio=self.encode_ratio,
                                                       max_confidence_lbd=self.max_confidence_lbd,
@@ -200,7 +203,7 @@ class WmLMNewArgs(WmLMArgs):
 @dataclass
 class WmAnalysisArgs:
     analysis_file_name: str
-    oracle_model_name: str = "facebook/opt-2.7b"
+    oracle_model_name: str = "huggyllama/llama-13b"
     device: str = 'cuda:0'
     args: Optional[WmBaseArgs] = None
 

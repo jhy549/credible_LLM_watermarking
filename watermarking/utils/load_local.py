@@ -54,7 +54,7 @@ def load_local_model_or_tokenizer(model_name: str, load_type: str):
         if load_type in 'tokenizer':
             model = AutoTokenizer.from_pretrained(model_name)
         elif load_type in 'model':
-            model = AutoModelForCausalLM.from_pretrained(model_name)
+            model = AutoModelForCausalLM.from_pretrained(model_name,device_map="auto")
     return model
 
 
