@@ -1,117 +1,93 @@
-## README
+# LLM Watermarking Framework and Toolkit
 
-### Preparation
+## Overview
+This repository contains the open-source toolkit and research materials for the "Credibility-Driven Multi-bit Watermark for Large Language Models Identification" project. The project introduces a novel multi-party credible watermarking framework that enhances the identification, privacy, and security of Large Language Models (LLMs). The watermarking scheme is designed to embed and extract multi-bit information without compromising the quality of the generated text.
 
-Requirement: transformers==4.28, torch==2.3.1, numpy
+## Key Features
+- **Multi-party Participation**: A collaborative watermarking framework involving a Trusted Third Party (TTP) and multiple LLM vendors.
+- **Privacy Protection**: Ensures that user prompts and model outputs remain confidential during the watermarking process.
+- **Flexibility and Scalability**: Easily accommodates different vendors' private watermarking technologies and allows for the upgrading of authentication and encryption algorithms.
+- **Robust Watermarking Algorithm**: A multi-bit watermarking method that improves success rates and information capacity, with a focus on maintaining text quality.
+- **Open-source Toolkit**: A user-friendly toolkit that includes watermarking frameworks, experiment configurations, datasets, and baseline algorithms.
 
-
-
-##### datasets
-
-Please download c4-train.00000-of-00512_sliced to ./c4-train.00000-of-00512_sliced
-
-
-
-##### models
-
-Download facebook/opt-1.3b(2.7b) to ./llm-ckpts/opt-1.3b or ./llm-ckpts/opt-1.3b
-
-Download gpt2 to ./llm-ckpts/gpt2
-
-(You can ignore this if your network is fine and transformers.AutoModel/AutoTokenier can successfully download from internet)
-
-
-
-### Usage
-
-See demo at wm.ipynb
-
-
-
-To run experiments, use experiment.py to generate text with watermark and get watermark successfully decoded rate in json format
-
-To cal ppl, use append_analysis.py
-
-
-
-For example:
-
-```shell
-python experiment.py
-python append_analysis.py
-sh gpu_sh.sh
+## Repository Structure
+```
+llm-watermarking/
+│
+├── paper/                  # Research paper and related documents
+│   ├── Credibility-Driven_Multi-bit_Watermark.pdf
+│   └── Reproducibility_Checklist.md
+│
+├── src/                    # Source code for the watermarking framework
+│   ├── embedding/          # Embedding watermark into LLM responses
+│   ├── extraction/         # Extracting watermark from text
+│   └── utils/              # Utility functions and modules
+│
+├── datasets/               # Sample datasets used in the experiments
+│   ├── OpenGen/
+│   ├── C4_News/
+│   └── Essays/
+│
+├── experiments/            # Scripts and configurations for running experiments
+│
+└── docs/                   # Documentation for the toolkit
 ```
 
+## Installation
+To install the required dependencies and set up the environment, follow these steps:
+1. Clone the repository:
+   ```
+   git clone https://anonymous.4open.science/r/credible-LLM-watermarking-7D62.git
+   ```
+2. Navigate to the repository:
+   ```
+   cd credible-LLM-watermarking
+   ```
+3. Create a virtual environment and activate it (optional but recommended):
+   ```
+   python -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   ```
+4. Install the dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
 
+## Usage
+The toolkit provides functionalities for both watermark embedding and extraction. Here are the basic steps to use the toolkit:
 
-(See details in watermarking/wm_*.py)
+### Embedding Watermarks
+1. Prepare your LLM and the text prompt.
+2. Use the embedding module to integrate the watermark into the LLM's response.
 
-'expr': 'python run_wm_lm.py': watermark with LM
+### Extracting Watermarks
+1. Obtain the watermarked text.
+2. Utilize the extraction module to decode and verify the watermark.
 
-'expr': 'python run_wm_random.py': watermark extended from white list
+### Running Experiments
+1. Configure the experiment settings in the `experiments/` directory.
+2. Run the experiment scripts to evaluate the watermarking performance.
 
-'expr': 'python run_wm_none.py': no watermark
+## Contributing
+We welcome contributions to the project. Please follow the guidelines in `CONTRIBUTING.md` for submitting issues and pull requests.
 
+## License
+This project is licensed under the [LICENSE_NAME](LICENSE). Please refer to the license file for more information.
 
-
-hypers in python experiment.py:
-
+## Citation
+If you use this toolkit in your research, please cite our paper:
 ```
-[
-	{
-		a: [a_1,a_2]
-		b: [b_1,b_2]
-	}
-	{
-		a: [a_3, b_3]
-	}
-]
-
-will run experiment on arguments (a_1,b_1), (a_1,b_2), (a_2,b_1), (a_2,b_2), (a_3,b_3)
-
-do not forget to set gpu_list in 'run = Sh_run(hyperparameter_lists=hypers,gpu_list=[0])''
-```
-
-
-
-to read results, you can initialize an arg from ./watermarking/arg_classes/wm_arg_class.py and use `load_result` method:
-
-```python
-from watermarking.arg_classes.wm_arg_class import WmLMArgs
-args = WmLMArgs()
-results = args.load_result()
-```
-
-
-
-### Add changes
-
-See ./watermarking/watermark_processors/message_models/lm_message_model.py for details
-
-You can add a new .py file, inherit this class and make changes on how seeds is generated or how A is chosen.
-
-
-
-use `LMMessageModel.cal_log_Ps`  to cal $P(x_{:t},x_{t+1},m)$:
-
-```python
-log_Ps = cal_log_Ps(x_prefix, x_cur,messages,lm_predictions)
-# log_Ps[i,j,k] = P(x_prefix[i],x_cur[i,j],messages[k])
-# lm_predictions[i,j] = P_LM(x_prefix[i],vocab[j])
+@misc{anonymous2024watermarking,
+  author = {Anonymous},
+  title = {Credibility-Driven Multi-bit Watermark for Large Language Models Identification},
+  year = {2024},
+  howpublished = {https://anonymous.4open.science/r/credible-LLM-watermarking-7D62},
+}
 ```
 
-### Results
+## Acknowledgements
+We would like to acknowledge the contributions of the LLM research community and the developers of the open-source models used in our experiments.
 
-See current results in cur_new_results_7_10.ipynb
+---
 
-current LM watermark decoding speed 3s/item (100 A sets); generate speed about 10s/item
-
-$(1-\lambda)P(x_{:t},x_t,m) + \lambda (P(x_{:t},x_t,m) - argmax_{m\not=m_0} P(x_{:t},x_t,m_0)$ 
-is now avalible with `message_model_strategy`='max_confidence' and 
-`max_confidence_lambda`=$\lambda$ 
-but I do not check its performance yet.
-
-public lm can be changed to 'gpt2' rather than the same generating model, but the performance 
-will be a little worse, also, set random_permutation_num to 50 rather than 100 will slightly hurt 
-the performance but speed up the decoding (2x speed)
-
+Please replace `LICENSE_NAME` with the actual name of the license you are using for this project. If you need any further customization or have specific requirements, feel free to ask.
