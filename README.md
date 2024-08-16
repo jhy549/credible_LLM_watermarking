@@ -69,11 +69,12 @@ llm-watermarking/
 │   ├── pipelines/              # Pipelines for structured evaluation processes
 │   │   ├── speed_analysis.py    
 │   │   ├── success_rate_analysis.py    
+│   │   ├── multi_voting_analysis.py  
 │   │   └── quality_analysis.py 
 │   └── tools/                  # Evaluation tools
 │       ├── ppl.py
 │       ├── success_rate_calculator.py  
-│   │   └── BLEU.py   
+│       └── BLEU.py   
 │
 ├── demo/                   # Credible watermark framework cases and examples for user testing
 │   ├── test_method_single_party.py      
