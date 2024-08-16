@@ -1,4 +1,4 @@
-# LLM Watermarking Framework and Toolkit
+# CredID: Credible LLM Watermarking Framework and Toolkit
 
 ## Overview
 This repository contains the open-source toolkit and research materials for the "Credibility-Driven Multi-bit Watermark for Large Language Models Identification" project. The project introduces a novel multi-party credible watermarking framework that enhances the identification, privacy, and security of Large Language Models (LLMs). The watermarking scheme is designed to embed and extract multi-bit information without compromising the quality of the generated text.
