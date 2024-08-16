@@ -18,6 +18,17 @@ llm-watermarking/
 │   ├── Credibility-Driven_Multi-bit_Watermark.pdf
 │   └── Reproducibility_Checklist.md
 │
+├── config/                 # Configuration files for various watermark algorithms          
+│   ├── CredID.json       
+│   ├── EXP.json           
+│   ├── KGW.json
+│   ├── CTWL.json            
+│   ├── SIR.json            
+│   ├── SWEET.json         
+│   ├── Unigram.json        
+│   ├── MPAC.json           
+│   └── Cyclic-shift.json    
+│       
 ├── src/                    # Source code for the watermarking framework
 │   ├── embedding/          # Embedding watermark into LLM responses
 │   ├── extraction/         # Extracting watermark from text
@@ -28,9 +39,51 @@ llm-watermarking/
 │   ├── C4_News/
 │   └── Essays/
 │
+├── watermarkings/          #Implementation framework for watermark algorithms
+│   ├── watermark_processor.py
+│   ├── base.py
+│   ├── KGW/
+│   ├── EXP/
+│   ├── SIR/
+│   ├── SWEET/
+│   ├── Unigram/
+│   ├── CredID/
+│   ├── CTWL/
+│   ├── MPAC/
+│   └── Cyclic-shift/
+│
+├── attacks/                #Implementation framework for watermark algorithms
+│   ├── get_datasets.py
+│   ├── cp_attack.py
+│   ├── Deletion_attack.py/
+│   ├── Substitution_attack.py
+│   └── Homoglyph_attack.py
+│
+├── evaluation/                 # Evaluation module, including tools and pipelines
+│   ├── dataset.py              # Script for handling dataset operations within evaluations
+│   ├── examples/               # Scripts for automated evaluations using pipelines
+│   │   ├── assess_success_rate.py  
+│   │   ├── assess_quality.py
+│   │   ├── assess_speed.py    
+│   │   └── assess_robustness.py   
+│   ├── pipelines/              # Pipelines for structured evaluation processes
+│   │   ├── speed_analysis.py    
+│   │   ├── success_rate_analysis.py    
+│   │   └── quality_analysis.py 
+│   └── tools/                  # Evaluation tools
+│       ├── ppl.py
+│       ├── success_rate_calculator.py  
+│   │   └── BLEU.py   
+│
+├── demo/                   # Credible watermark framework cases and examples for user testing
+│   ├── test_method_single_party.py      
+│   ├── test_pipeline_multi_party.py    
+│   └── test_real_word.py
+│
 ├── experiments/            # Scripts and configurations for running experiments
 │
-└── docs/                   # Documentation for the toolkit
+├── README.md               # Main project documentation
+└── requirements.txt        # Dependencies required for the project
 ```
 
 ## Installation
