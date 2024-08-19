@@ -765,7 +765,7 @@
         "delta": 1.5,
         "repeat_penalty": 1.5,
         "message": [
-            42,
+            42
         ],
         "prompt_length": 300,
         "generated_length": 50,
