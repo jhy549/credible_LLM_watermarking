@@ -12,3 +12,4 @@ my_watermark_result/
 open-generation-data/
 *.out
 **/*.pyc
+datasets/open-generation-data/*
