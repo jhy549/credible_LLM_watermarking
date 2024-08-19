@@ -182,11 +182,11 @@ The toolkit provides functionalities for both watermark embedding and extraction
 2. Utilize the extraction module to decode and verify the watermark.
 
    ```python
-log_probs = wm_precessor_message_model.decode(output_text)
-print("my watermark confidence:", log_probs[1][1][0][2])
-#watermark confidence:0.99872
-print("extracted message:", log_probs[0])
-#extracted message:241
+   log_probs = wm_precessor_message_model.decode(output_text)
+   print("my watermark confidence:", log_probs[1][1][0][2])
+   #watermark confidence:0.99872
+   print("extracted message:", log_probs[0])
+   #extracted message:241
    ```
 
 ### Watermark Pipeline User Case
