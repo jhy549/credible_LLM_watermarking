@@ -6,10 +6,10 @@
 figs/
 dat/
 C4/
-datasets/c4-train.00000-of-00512_sliced/train/
-datasets/c4-train.00000-of-00512_sliced/*.json
-datasets/c4-train.00000-of-00512_sliced_for_cp/*.json
-datasets/c4-train.00000-of-00512_sliced_for_cp/train
+datasets/c4-train.00000-of-00512_sliced/train/*
+datasets/c4-train.00000-of-00512_sliced/dataset_dict.json
+datasets/c4-train.00000-of-00512_sliced_for_cp/dataset_dict.json
+datasets/c4-train.00000-of-00512_sliced_for_cp/train/*
 my_watermark_result/
 open-generation-data/
 *.out
