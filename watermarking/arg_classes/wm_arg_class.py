@@ -2,15 +2,14 @@ import os
 from dataclasses import dataclass, field
 from typing import Optional, List
 
-from watermarking.utils.load_local import load_local_model_or_tokenizer
-from watermarking.watermark_processors.message_model_processor import WmProcessorMessageModel
-from watermarking.watermark_processors.message_models.lm_message_model import LMMessageModel
-from watermarking.watermark_processors.message_models.random_message_model import RandomMessageModel
-from watermarking.watermark_processors.random_message_model_processor import \
+from src.utils.load_local import load_local_model_or_tokenizer
+from watermarking.CredID.message_model_processor import WmProcessorMessageModel
+from watermarking.CredID.message_models.lm_message_model import LMMessageModel
+from watermarking.CredID.message_models.random_message_model import RandomMessageModel
+from watermarking.CredID.random_message_model_processor import \
     WmProcessorRandomMessageModel
 from transformers import AutoTokenizer, AutoModelForCausalLM
-from watermarking.watermark_processors.message_models.lm_message_model_update_1 import LMMessageModel_update
-from watermarking.watermark_processors.message_model_processor_update import WmProcessorMessageModel_update
+
 
 ROOT_PATH = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
@@ -167,7 +166,7 @@ class WmLMArgs(WmBaseArgs):
     def get_decoder(self, lm_tokenizer=None, lm_model=None) -> WmProcessorMessageModel:
         if lm_tokenizer is None or lm_model is None:
             lm_model, lm_tokenizer = self._load_model_and_tokenizer()
-        lm_message_model = LMMessageModel_update(tokenizer=lm_tokenizer,
+        lm_message_model = LMMessageModel(tokenizer=lm_tokenizer,
                                           lm_model=lm_model,
                                           lm_tokenizer=lm_tokenizer,
                                           delta=self.delta,
@@ -176,7 +175,7 @@ class WmLMArgs(WmBaseArgs):
                                           message_code_len=self.message_code_len,
                                           random_permutation_num=self.random_permutation_num)
 
-        watermark_processor = WmProcessorMessageModel_update(message_model=lm_message_model,
+        watermark_processor = WmProcessorMessageModel(message_model=lm_message_model,
                                                       tokenizer=lm_tokenizer,
                                                       encode_ratio=self.encode_ratio,
                                                       max_confidence_lbd=self.max_confidence_lbd,

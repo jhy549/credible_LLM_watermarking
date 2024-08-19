@@ -1,0 +1,49 @@
+{
+  "builder_name": "json",
+  "citation": "",
+  "config_name": "default",
+  "dataset_size": 73185630,
+  "description": "",
+  "download_checksums": {
+    "./c4-train.00102-of-00512.json": {
+      "num_bytes": 74638502,
+      "checksum": null
+    }
+  },
+  "download_size": 74638502,
+  "features": {
+    "text": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "timestamp": {
+      "dtype": "timestamp[s]",
+      "_type": "Value"
+    },
+    "url": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "truncated_text": {
+      "dtype": "string",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 147824132,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 73185630,
+      "num_examples": 26953,
+      "dataset_name": "json"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}
