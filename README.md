@@ -139,7 +139,7 @@ The toolkit provides functionalities for both watermark embedding and extraction
     message = secret_message_gen(model_version, timestamps, extra_info, length)
    # message:[0011110001]
    ```
-2. Configure the watermark parameters:
+2. Configure the watermark parameters, and write the message into the `message` field in the JSON：
 
    ```
    #./config/CredID.json
