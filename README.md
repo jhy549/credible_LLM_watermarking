@@ -181,8 +181,9 @@ The toolkit provides functionalities for both watermark embedding and extraction
             max_new_tokens=config['max_new_tokens'], 
             num_beams=config['num_beams'],
             logits_processor=LogitsProcessorList([min_length_processor, repetition_processor, wm_precessor_message_model]))
-   output_text = tokenizer.decode(output_tokens[0], skip_special_tokens=True)
+   output_text = tokenizer.decode(output_tokens[0][start_length:], skip_special_tokens=True)
    print("watermarked_text:",output_text)
+   >>> 4.9% ordinary matter, 26.8% dark matter and 68.3% dark energy.Scientists have unveiled a comprehensive overview of what makes up our Universe. Astronomers at Durham University, led by Professor Carlos Frenk, used data from NASA's Wilkinson Microwave Anisotropy Probe (WMAP) to create the first-ever 'cosmic census'. Their findings are published in the journal Monthly Notices
    ``````
 
 ### Extracting Watermarks
@@ -193,9 +194,9 @@ The toolkit provides functionalities for both watermark embedding and extraction
    ```python
    log_probs = wm_precessor_message_model.decode(output_text)
    print("my watermark confidence:", log_probs[1][1][0][2])
-   #watermark confidence:0.99872
+   >>> my watermark confidence:0.99872
    print("extracted message:", log_probs[0])
-   #extracted message:[0011110001]
+   >>> extracted message:[0011110001]
    ```
 
 ### Running Demo
@@ -206,15 +207,27 @@ To run the demo, follow these steps:
 ```
 cd ./demo
 ```
-2. For single party watermark embedding and extraction, run:
+2. For a basic usage scenario that simulates a single model vendor using our CredID for watermark embedding and extraction, we provide a demo that includes the following modules:
+
+- **Model Loading**: Load the pre-trained model required for watermark embedding and extraction.
+- **Watermark Parameter Loading**: Load the parameters necessary for the watermarking process.
+- **Watermark Embedding Pipeline**: Embed the watermark into the text using the loaded model and parameters.
+- **Watermark Extraction Pipeline**: Extract and verify the watermark from the text to ensure its integrity.
+- **Text Quality Analysis**: Analyze the quality of the text after watermark embedding to ensure it meets the required standards.
+
+To run the demo, execute the following command:
 ```
 python test_method_single_party.py
 ```
-3. For multiple parties watermark embedding and joint-voting extraction, run:
+3. For a scenario where multiple model vendors use our CredID for watermark embedding and extraction, we provide a demo that uses three models with corresponding watermark parameters and watermark messages. The generated watermarked texts are then fed into the watermark extraction pipelines of all three models for joint-voting extraction.
+
+To run the demo, execute the following command:
 ```
 python test_method_multi_party.py
 ```
-4. For realistic scenario simulation emulation (mix of non-watermarked text and multi-vendor watermarked text), run:
+4. To further simulate a real-world internet scenario where there is a mix of human-written non-watermarked text and multi-vendor watermarked text, we provide a demo that uses a text mixture dataset we constructed. This demo utilizes the joint-voting extraction framework to identify the source of each type of text.
+
+To run the demo, execute the following command:
 ```
 python test_real_world.py
 ```
@@ -223,108 +236,55 @@ The data for this test is located in `./datasets/multi_vendors_data`.
 ### Running Experiments
 
 1. Configure the experiment settings and run the experiment scripts in the `experiments/` directory.
+   
+   - `analysis_CTWL_CredID.py`
+     - This script performs analysis on the CTWL or CredID methods. It includes statistical evaluations and case studies to understand the method characteristics.
+   - `analysis_KGW.py`
+     - This script performs analysis on the KGW family methods. It includes statistical evaluations and case studies to understand the method characteristics.
+   - `experiment.py`
+     -  A general-purpose script that sets up and runs various experiments. It include multiple configurations and can be customized for different experimental setups.
+   - `run_CredID.py`
+      - This script is specifically designed to run experiments on CredID framework. It includes data loading, model training, and evaluation procedures.
+   - `run_attack.py`
+      -  This script simulates and analyzes attacks on watermarked texts. It is used to evaluate the robustness and security of the watermarking against specific types of attacks.
+   - `wm_test_CredID_single_party.py`
+     -  This script tests CredID watermarking in a single-party setting. It evaluates the success rates and quality of the watermarking method.
+   -  `wm_test_ecc_7_4.py`
+        - This script is used to test CredID equipped with error-correcting codes (ECC) with parameters (7, 4). It includes encoding, decoding, and performance evaluation components.
+   -  `wm_test_realword.py`
+      -  This script tests watermarking techniques in real-world scenarios. It evaluates how well the watermarking perform under practical conditions.
+   - `wm_test_rs.py`
+     - This script tests random sampling (RS) techniques for watermarking. It includes procedures for sampling, watermark embedding, and evaluation.
+
 2. Run the watermark attack scripts in the `attacks/` directory.
+   
+   
+   - `cp_attack.py`
+     - This script performs a specific type of copy-paste attack. It includes methods to automate the attack process and measure the robustness of the watermarking.
+   
+   - `deletion.py`
+     - This script simulates deletion attacks where parts of the watermarked text are removed. It assesses how well the watermarking method can withstand and recover from such attacks.
+   
+   - `homoglyphs_attack.py`
+     - This script simulates homoglyph attacks, where visually similar characters are substituted in the watermarked text. It evaluates the robustness of the watermarking method against these subtle alterations.
+   
+   - `substitution_attack.py`
+     - This script simulates substitution attacks, where certain characters or words in the watermarked text are replaced. It evaluates the robustness of the watermarking method to such modifications.
+
+
 3. Run the evaluation scripts to evaluate the watermarking performance in the `evaluation/pipelines/` directory.
+
+   - `multi_voting_analysis.py`
+     - This script performs analysis using multi-voting techniques. It evaluates the effectiveness of watermarking methods based on aggregated voting results from multiple sources.
    
-Run the watermark attack scripts in the attack/ directory.
-## A User Example
-
-```python
-import json
-import os
-import torch
-import sys
-import logging
-import numpy as np
-from transformers import AutoTokenizer, AutoModelForCausalLM, LogitsProcessorList, MinLengthLogitsProcessor
-script_dir = os.path.dirname(__file__)
-project_root = os.path.abspath(os.path.join(script_dir, '..'))
-sys.path.append(project_root)
-
-from watermarking.watermark_processor import RepetitionPenaltyLogitsProcessor
-from src.utils.text_tools import truncate
-from src.utils.load_local import load_local_model_or_tokenizer
-from datasets import load_dataset, load_from_disk
-from watermarking.CredID.message_models.lm_message_model import LMMessageModel
-from watermarking.CredID.message_model_processor import WmProcessorMessageModel
-from src.utils.watermark import compute_ppl_single
-from src.embedding.load import load_config, prepare_input_from_prompts, load_model_and_tokenizer
-
-def main():
-   # Define the path of the configuration file
-   config_path = os.path.join(project_root, 'config', 'CTWL.json')
+   - `quality_analysis.py`
+     - This script assesses the quality of the watermarked texts. It includes metrics and evaluations to determine the perceptual quality and integrity of the watermarked content.
    
-   # Load the configuration
-   config = load_config(config_path)
+   - `speed_analysis.py`
+     - This script analyzes the speed performance of the watermarking methods. It measures the time taken for watermark embedding and detection processes under different conditions.
    
-   # Configure logging
-   logging.basicConfig(filename=config['log_file'], level=logging.DEBUG, format='%(asctime)s:%(levelname)s:%(message)s')
-   torch.set_printoptions(threshold=np.inf)
-   
-   #Load the model and tokenizer using the new function
-   tokenizer, model = load_model_and_tokenizer(config) 
-
-   tokenized_input = prepare_input_from_prompts(model.device,tokenizer, config, project_root)
-
-   min_length_processor = MinLengthLogitsProcessor(min_length=config['min_length'], eos_token_id=tokenizer.eos_token_id)
-   repetition_processor = RepetitionPenaltyLogitsProcessor(penalty=config['penalty'])
-
-   # Read the parameters of lm_message_model from the configuration file
-   lm_message_model_params = config['lm_message_model_params']
-   lm_message_model = LMMessageModel(
-      tokenizer=tokenizer, 
-      lm_model=model, 
-      lm_tokenizer=tokenizer,
-      delta=lm_message_model_params['delta'], 
-      lm_prefix_len=lm_message_model_params['lm_prefix_len'], 
-      lm_topk=lm_message_model_params['lm_topk'], 
-      message_code_len=lm_message_model_params['message_code_len'], 
-      random_permutation_num=lm_message_model_params['random_permutation_num']
-   )
-
-   # Read the parameters of wm_processor_message_model from the configuration file
-   wm_processor_message_model_params = config['wm_processor_message_model_params']
-   wm_precessor_message_model = WmProcessorMessageModel(
-      message_model=lm_message_model, 
-      tokenizer=tokenizer,
-      encode_ratio=wm_processor_message_model_params['encode_ratio'], 
-      max_confidence_lbd=wm_processor_message_model_params['max_confidence_lbd'], 
-      strategy=wm_processor_message_model_params['strategy'], 
-      message=wm_processor_message_model_params['message']
-   )
-   
-   start_length = tokenized_input['input_ids'].shape[-1]
-   wm_precessor_message_model.start_length = start_length
-   output_tokens = model.generate(
-      **tokenized_input, 
-      max_new_tokens=config['max_new_tokens'], 
-      num_beams=config['num_beams'],
-      logits_processor=LogitsProcessorList([min_length_processor, repetition_processor, wm_precessor_message_model])
-   )
-   print("watermarked_text:",output_tokens)
-   output_text = tokenizer.decode(output_tokens[0][start_length:], skip_special_tokens=True)
-   logging.info(output_text)
-   prefix_and_output_text = tokenizer.decode(output_tokens[0], skip_special_tokens=True)
-   log_probs = wm_precessor_message_model.decode(output_text)
-   print("my watermark confidence:", log_probs[1][1][0][2])
-   print("decoded message:", log_probs[0])
-   
-   
-   oracle_tokenizer = AutoTokenizer.from_pretrained(config['oracle_model_name'])
-   oracle_model = AutoModelForCausalLM.from_pretrained(config['oracle_model_name'],device_map="auto")#,torch_dtype=torch.float16)
-   
-
-   loss, ppl = compute_ppl_single(prefix_and_output_text=prefix_and_output_text,
-                              oracle_model_name='huggyllama/llama-13b',
-                              output_text=output_text,
-                              oracle_model=oracle_model, oracle_tokenizer=oracle_tokenizer)
-   print("loss,ppl:",loss, ppl)
-
-if __name__ == '__main__':
-   main()
-```
-
-
+   - `success_rate_analysis.py`
+     - This script evaluates the success rate of watermark extraction. It includes procedures to calculate and analyze the success rates under various scenarios and attack conditions.
 
 
 
