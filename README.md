@@ -176,12 +176,12 @@ The toolkit provides functionalities for both watermark embedding and extraction
 3. Use the embedding module to integrate the watermark into the LLM's response.
 
    ``````python
-   output_text = model.generate(
+   output_tokens = model.generate(
             **tokenized_input, 
             max_new_tokens=config['max_new_tokens'], 
             num_beams=config['num_beams'],
-            logits_processor=LogitsProcessorList([min_length_processor, repetition_processor, wm_precessor_message_model])
-         )
+            logits_processor=LogitsProcessorList([min_length_processor, repetition_processor, wm_precessor_message_model]))
+   output_text = tokenizer.decode(output_tokens[0], skip_special_tokens=True)
    print("watermarked_text:",output_text)
    ``````
 
@@ -195,7 +195,7 @@ The toolkit provides functionalities for both watermark embedding and extraction
    print("my watermark confidence:", log_probs[1][1][0][2])
    #watermark confidence:0.99872
    print("extracted message:", log_probs[0])
-   #extracted message:241
+   #extracted message:[0011110001]
    ```
 
 ### Running Demo
