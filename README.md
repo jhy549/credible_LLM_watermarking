@@ -224,8 +224,9 @@ The data for this test is located in `./datasets/multi_vendors_data`.
 
 1. Configure the experiment settings and run the experiment scripts in the `experiments/` directory.
 2. Run the evaluation scripts to evaluate the watermarking performance in the `evaluation/pipelines/` directory.
+   
 
-### Watermark Pipeline
+## A User Example
 
 ```python
 import json
