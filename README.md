@@ -301,11 +301,14 @@ This project is licensed under the [LICENSE_NAME](LICENSE). Please refer to the 
 
 If you use this toolkit in your research, please cite our paper:
 
-@misc{anonymous2024watermarking,
-  author = {Anonymous},
-  title = {CredID: Credible Multi-bit Watermark for Large Language Models Identification},
-  year = {2024},
-  howpublished = {https://anonymous.4open.science/r/credible-LLM-watermarking-7D62},
+@misc{jiang2024credidcrediblemultibitwatermark,
+      title={CredID: Credible Multi-Bit Watermark for Large Language Models Identification}, 
+      author={Haoyu Jiang and Xuhong Wang and Ping Yi and Shanzhe Lei and Yilun Lin},
+      year={2024},
+      eprint={2412.03107},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2412.03107}, 
 }
 
 ## Acknowledgements
