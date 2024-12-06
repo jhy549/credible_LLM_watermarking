@@ -317,6 +317,3 @@ If you use this toolkit in your research, please cite our paper:
 
 We would like to acknowledge the contributions of the LLM research community and the developers of the open-source models used in our experiments.
 
----
-
-Please replace `LICENSE_NAME` with the actual name of the license you are using for this project. If you need any further customization or have specific requirements, feel free to ask.
