@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains the open-source toolkit and research materials for the "Credibility-Driven Multi-bit Watermark for Large Language Models Identification" project. The project introduces a novel multi-party credible watermarking framework that enhances the identification, privacy, and security of Large Language Models (LLMs). The watermarking scheme is designed to embed and extract multi-bit information without compromising the quality of the generated text. This repository contains code for the paper [Towards Codable Watermarking for Large Language Models](https://github.com/lancopku/codable-watermarking-for-llm) by Lean Wang, Wenkai Yang, Deli Chen, Hao Zhou, Yankai Lin, Fandong Meng, Jie Zhou and Xu Sun, and the paper [MarkLLM: An Open-source toolkit for LLM Watermarking](https://github.com/THU-BPM/MarkLLM) by Leyi Pan, Aiwei Liu, Zhiwei He, Zitian Gao, Xuandong Zhao, Yijian Lu, Binglin Zhou, Shuliang Liu, Xuming Hu, Lijie Wen, Irwin King and Philip S. Yu.
+This repository contains the open-source toolkit and research materials for the "[Credibility-Driven Multi-bit Watermark for Large Language Models Identification](https://arxiv.org/abs/2412.03107)" project. The project introduces a novel multi-party credible watermarking framework that enhances the identification, privacy, and security of Large Language Models (LLMs). The watermarking scheme is designed to embed and extract multi-bit information without compromising the quality of the generated text. This repository contains code for the paper [Towards Codable Watermarking for Large Language Models](https://github.com/lancopku/codable-watermarking-for-llm) by Lean Wang, Wenkai Yang, Deli Chen, Hao Zhou, Yankai Lin, Fandong Meng, Jie Zhou and Xu Sun, and the paper [MarkLLM: An Open-source toolkit for LLM Watermarking](https://github.com/THU-BPM/MarkLLM) by Leyi Pan, Aiwei Liu, Zhiwei He, Zitian Gao, Xuandong Zhao, Yijian Lu, Binglin Zhou, Shuliang Liu, Xuming Hu, Lijie Wen, Irwin King and Philip S. Yu.
 
 ## Key Features
 
@@ -302,11 +302,14 @@ This project is licensed under the [LICENSE_NAME](LICENSE). Please refer to the 
 If you use this toolkit in your research, please cite our paper:
 
 ```bibtex
-@misc{anonymous2024watermarking,
-  author = {Anonymous},
-  title = {CredID: Credible Multi-bit Watermark for Large Language Models Identification},
-  year = {2024},
-  howpublished = {https://anonymous.4open.science/r/credible-LLM-watermarking-7D62},
+@misc{jiang2024credidcrediblemultibitwatermark,
+      title={CredID: Credible Multi-Bit Watermark for Large Language Models Identification}, 
+      author={Haoyu Jiang and Xuhong Wang and Ping Yi and Shanzhe Lei and Yilun Lin},
+      year={2024},
+      eprint={2412.03107},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2412.03107}, 
 }
 ```
 
