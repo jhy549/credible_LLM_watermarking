@@ -315,5 +315,5 @@ If you use this toolkit in your research, please cite our paper:
 
 ## Acknowledgements
 
-We would like to acknowledge the contributions of the LLM research community and the developers of the open-source models used in our experiments.
+We would like to acknowledge the contributions of the LLM research community and the developers of the open-source models used in our experiments. This repository contains code for the paper [Towards Codable Watermarking for Large Language Models](https://github.com/lancopku/codable-watermarking-for-llm) by Lean Wang, Wenkai Yang, Deli Chen, Hao Zhou, Yankai Lin, Fandong Meng, Jie Zhou and Xu Sun, and the paper [MarkLLM: An Open-source toolkit for LLM Watermarking](https://github.com/THU-BPM/MarkLLM) by Leyi Pan, Aiwei Liu, Zhiwei He, Zitian Gao, Xuandong Zhao, Yijian Lu, Binglin Zhou, Shuliang Liu, Xuming Hu, Lijie Wen, Irwin King and Philip S. Yu.
 
